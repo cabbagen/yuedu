@@ -14,5 +14,6 @@
 
 # custom
 tmp
+config
 vendor/*
 !vendor/vendor.json
