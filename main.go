@@ -10,7 +10,7 @@ var app *gin.Engine = gin.Default()
 
 func init() {
   router.SetUp(app)
-  database.Connect()
+  database.Connect("mysql")
 }
 
 func main() {

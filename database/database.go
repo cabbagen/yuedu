@@ -6,30 +6,39 @@ import (
   _"github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var database *gorm.DB
+var fdatabase *gorm.DB
+
+// custom the table name prefix 
+func defaultTableNameHandler() {
+  gorm.DefaultTableNameHandler = func (db *gorm.DB, defaultTableName string) string {
+    return "yd_" + defaultTableName
+  }
+}
 
 func init() {
   defaultTableNameHandler()
 }
 
-func defaultTableNameHandler() {
-  gorm.DefaultTableNameHandler = func (db *gorm.DB, defaultTableName string) string {
-    return "cb_" + defaultTableName
-  }
-}
-
-func Connect() {
-  db, err := gorm.Open("mysql", config.DataBase["mysql"])
-
-  // defer db.Close()
+func Connect(databaseType string) {
+  database, err := gorm.Open(databaseType, config.DataBase[databaseType])
 
   if err != nil {
     panic(err)
   }
 
-  database = db
+  fdatabase = database;
 }
 
 func GetDataBase() *gorm.DB {
-  return database;
+  if fdatabase == nil {
+    panic("database is nil, you need invoke database.Connect function")
+  }
+  return fdatabase;
+}
+
+func Destory() bool {
+  if fdatabase != nil {
+    fdatabase = nil
+  }
+  return true
 }
