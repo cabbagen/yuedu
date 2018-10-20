@@ -16,7 +16,7 @@ func (ic IndexController) HandleIndex(c *gin.Context) {
 
   userModel.Query(&users)
 
-  c.JSON(200, users)
+  // c.JSON(200, users)
 
-  // c.HTML(200, "index.tmpl", map[string]string {"title": "hello golang"})
+  c.HTML(200, "index.tmpl", map[string]string {"title": "hello golang"})
 }
