@@ -8,22 +8,21 @@ import (
 
 var fdatabase *gorm.DB
 
-// custom the table name prefix 
+func init() {
+  defaultTableNameHandler()
+}
+
 func defaultTableNameHandler() {
   gorm.DefaultTableNameHandler = func (db *gorm.DB, defaultTableName string) string {
     return "yd_" + defaultTableName
   }
 }
 
-func init() {
-  defaultTableNameHandler()
-}
-
 func Connect(databaseType string) {
-  database, err := gorm.Open(databaseType, config.DataBase[databaseType])
+  database, connectErr := gorm.Open(databaseType, config.DataBase[databaseType])
 
-  if err != nil {
-    panic(err)
+  if connectErr != nil {
+    panic(connectErr)
   }
 
   fdatabase = database;
