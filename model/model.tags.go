@@ -1,7 +1,7 @@
 package model
 
 import (
-  "../database"
+  "yuedu/database"
   "github.com/jinzhu/gorm"
 )
 

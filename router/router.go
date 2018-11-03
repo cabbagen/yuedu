@@ -1,7 +1,7 @@
 package router
 
 import (
-  "../config"
+  "yuedu/config"
   "github.com/gin-gonic/gin"
 )
 

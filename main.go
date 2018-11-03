@@ -1,8 +1,8 @@
 package main
 
 import (
-  "./router"
-  "./database"
+  "yuedu/router"
+  "yuedu/database"
   "github.com/gin-gonic/gin"
 )
 
