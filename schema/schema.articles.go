@@ -9,7 +9,7 @@ type Article struct {
   PlayNumber        int              `grom:"column:play_numnber;type=int;not null;default 0" json:"playNumber"`
   CoverImg          string           `gorm:"column:cover_img;type=varchar(255);not null;default \"\"" json:"coverImg"`
   Audio             string           `gorm:"column:audio;type=varchar(255);not null;default \"\"" json:"audio"`
-  TagText           string           `gorm:"column:tag_text;type=varchar(255);not null;default \"\"" json:"tagText"`
+  TagIds           string            `gorm:"column:tag_ids;type=varchar(255);not null;default \"\"" json:"tagText"`
   ContentText       string           `gorm:"column:content_text;type=text;not null" json:"contentText"`
 }
 
