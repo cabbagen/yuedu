@@ -1,0 +1,45 @@
+.index-content {
+  width: 1010px;
+  margin: 40px auto 0 auto;
+}
+.article-summary {
+  width: 620px;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+.article-summary h2 {
+  font-size: 24px;
+  font-weight: normal;
+}
+.article-title {
+  margin: 10px 0 25px 0;
+  clear: both;
+  overflow: hidden;
+  color: #999999;
+}
+.article-title strong {
+  margin-right: 25px;
+  font-weight: normal;
+}
+.article-title i, .article-title em {
+  font-style: normal;
+} 
+.article-title span:nth-child(1) {
+  float: left;
+}
+.article-title span:nth-child(2) {
+  float: right;
+}
+.article-title span:nth-child(2) em {
+  font-size: 18px;
+  margin: 0 5px;
+  font-style: italic;
+}
+.article-content {
+  width: 620px;
+  margin-top: 30px;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}

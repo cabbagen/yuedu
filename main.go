@@ -2,6 +2,7 @@ package main
 
 import (
   "yuedu/router"
+  "yuedu/ctemplate"
   "yuedu/database"
   "github.com/gin-gonic/gin"
 )
@@ -9,8 +10,9 @@ import (
 var app *gin.Engine = gin.Default()
 
 func init() {
-  router.SetUpRouter(app)
   database.Connect("mysql")
+  router.SetUpRouter(app)
+  ctemplate.SetUpTemplater(app)
 }
 
 func main() {

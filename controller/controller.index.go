@@ -12,7 +12,12 @@ type IndexController struct {
 
 
 func (ic IndexController) HandleIndex(c *gin.Context) {
-  var indexData map[string]interface{} = make(map[string]interface{})
+  var indexData map[string]interface{} = ic.getIndexData()
+
+  c.HTML(200, "windex.html", indexData)
+}
+
+func (ic IndexController) getIndexData() map[string]interface{} {
 
   var channels []schema.Channel
   model.NewChannelModel().FindAll(&channels)
@@ -21,13 +26,14 @@ func (ic IndexController) HandleIndex(c *gin.Context) {
   model.NewArticleModel().GetLastArticleByChannel(&article, 1)
 
   var userInfo model.FullUserInfo
-  model.NewUserModel().GetFullUserInfo("168", &userInfo)
+  model.NewUserModel().GetFullUserInfo(article.Anchor, &userInfo)
 
-  indexData["channels"] = channels
-  indexData["article"] = article
-  indexData["userInfo"] = userInfo
+  var indexData map[string]interface{} = map[string]interface{} {
+    "channels": channels,
+    "article": article,
+    "userInfo": userInfo,
+  }
 
-  c.PureJSON(200, indexData)
-
-  // c.HTML(200, "windex.html", map[string]string {"title": "hello golang"})
+  return indexData
+  
 }
