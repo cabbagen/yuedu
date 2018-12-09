@@ -1,25 +1,25 @@
 {{define "navigation"}}
-  <header class="common-header">
-    <section class="common-inner">
-        <section class="common-logo">
-          <img src="/static/images/logo_icon.png" alt="悦读" />
-          <span>悦读 FM</span>
-        </section>
-        <ul class="common-navigation">
-          {{range .channels}}
-            <li>{{.Name}}</li>
-          {{end}}
-        </ul>
-        <section class="common-opecation">
-          <div class="common-search">
-            <input type="text" name="search" />
-            <i class="icon-search" title="查询搜索"></i>
-          </div>
-          <div class="common-login">
-            <span>登陆</span>
-            <span>注册</span>
-          </div>
-        </section>
-    </section>
-  </header>
+	<header class="common-header">
+		<section class="common-inner">
+				<section class="common-logo">
+					<img src="/static/images/logo_icon.png" alt="悦读" />
+					<span>悦读 FM</span>
+				</section>
+				<ul class="common-navigation">
+					{{range .channels}}
+						<li>{{.Name}}</li>
+					{{end}}
+				</ul>
+				<section class="common-opecation">
+					<div class="common-search">
+						<input type="text" name="search" />
+						<i class="icon-search" title="查询搜索"></i>
+					</div>
+					<div class="common-login">
+						<span>登陆</span>
+						<span>注册</span>
+					</div>
+				</section>
+		</section>
+	</header>
 {{end}}

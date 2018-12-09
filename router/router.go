@@ -25,7 +25,3 @@ func SetUpRouter(engine *gin.Engine) {
 		engine.Static("static", config.Application["static"])
 	}
 }
-
-func demo() {
-
-}

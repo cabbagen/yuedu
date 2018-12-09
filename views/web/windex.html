@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    {{template "head"}}
-    <link href="/static/index/index.css" rel="stylesheet" type="text/css" />
-  </head>
+	<head>
+		{{template "head"}}
+		<link href="/static/index/index.css" rel="stylesheet" type="text/css" />
+	</head>
 
-  <body>
-    {{template "navigation" .}}
-    <section class="index-content">
-      <section class="article">
-        <section class="article-summary">
-          <h2>{{.article.Title}}</h2>
-          <p class="article-title">
-            <span>
-              <strong>
-                <i class="icon-pencil"></i>
-                <em>{{.article.Author}}</em>
-              </strong>
-              <strong>
-                <i class="icon-microphone"></i>
-                <em>{{.article.Anchor}}</em>
-              </strong>
-            </span>
-            <span>播放<em>{{.article.PlayNumber}}</em>次</span>
-          </p>
-          <section>
-            <img src="{{.article.CoverImg}}" />
-          </section>
-        </section>
-        <section class="article-content">
-          {{.article.ContentText | unescaped}}
-        </section>
-      </section>
-    </section>
-  </body>
+	<body>
+		{{template "navigation" .}}
+		<section class="index-content">
+			<section class="article">
+				<section class="article-summary">
+					<h2>{{.article.Title}}</h2>
+					<p class="article-title">
+						<span>
+							<strong>
+								<i class="icon-pencil"></i>
+								<em>{{.article.Author}}</em>
+							</strong>
+							<strong>
+								<i class="icon-microphone"></i>
+								<em>{{.article.Anchor}}</em>
+							</strong>
+						</span>
+						<span>播放<em>{{.article.PlayNumber}}</em>次</span>
+					</p>
+					<section>
+						<img src="{{.article.CoverImg}}" />
+					</section>
+				</section>
+				<section class="article-content">
+					{{.article.ContentText | unescaped}}
+				</section>
+			</section>
+		</section>
+	</body>
 
-  {{template "scripts"}}
+	{{template "scripts"}}
 </html>
