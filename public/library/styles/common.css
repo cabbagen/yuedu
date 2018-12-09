@@ -1,66 +1,66 @@
 html, body {
-  width: 100%;
-  height: 100%;
-  background-color: rgb(245, 245, 245);
-  color: rgb(112, 112, 112);
-  font: 12px/1.5 "Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","å¾®è½¯é›…é»‘","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+	width: 100%;
+	height: 100%;
+	background-color: rgb(245, 245, 245);
+	color: rgb(112, 112, 112);
+	font: 12px/1.5 "Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","å¾®è½¯é›…é»‘","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
 }
 .common-header {
-  width: 100%;
-  height: 100px;
-  line-height: 100px;
-  background-color: #ffffff;
-  font-size: 14px;
+	width: 100%;
+	height: 100px;
+	line-height: 100px;
+	background-color: #ffffff;
+	font-size: 14px;
 }
 .common-inner {
-  width: 1010px;
-  margin: 0 auto;
-  clear: both;
+	width: 1010px;
+	margin: 0 auto;
+	clear: both;
 }
 .common-logo img {
-  display: inline-block;
-  width: 20px;
-  margin-right: 4px;
-  position: relative;
-  top: 8px;
+	display: inline-block;
+	width: 20px;
+	margin-right: 4px;
+	position: relative;
+	top: 8px;
 }
 .common-logo, .common-navigation {
-  float: left;
+	float: left;
 }
 .common-navigation {
-  margin-left: 80px;
+	margin-left: 80px;
 }
 .common-navigation li {
-  display: inline-block;
-  list-style: none;
-  width: 70px;
-  text-align: center;
+	display: inline-block;
+	list-style: none;
+	width: 70px;
+	text-align: center;
 }
 .common-opecation {
-  float: right;
+	float: right;
 }
 .common-opecation .common-search, .common-opecation .common-login {
-  float: left;
+	float: left;
 }
 .common-opecation .common-search input {
-  outline: none;
-  margin-right: 8px;
-  border-radius: 3px;
-  padding-left: 5px;
-  border: 1px solid #eeeeee;
-  width: 200px;
-  height: 25px;
-  font-size: 12px;
+	outline: none;
+	margin-right: 8px;
+	border-radius: 3px;
+	padding-left: 5px;
+	border: 1px solid #eeeeee;
+	width: 200px;
+	height: 25px;
+	font-size: 12px;
 }
 .common-opecation .common-search i {
-  cursor: pointer;
+	cursor: pointer;
 }
 .common-opecation .common-login {
-  padding-left: 8px;
+	padding-left: 8px;
 }
 .common-opecation .common-login span {
-  display: inline-block;
-  font-size: 12px;
-  width: 30px;
-  text-align: center;
+	display: inline-block;
+	font-size: 12px;
+	width: 30px;
+	text-align: center;
 }

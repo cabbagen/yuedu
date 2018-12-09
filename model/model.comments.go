@@ -1,14 +1,14 @@
 package model
 
 import (
-  "yuedu/database"
-  "github.com/jinzhu/gorm"
+	"yuedu/database"
+	"github.com/jinzhu/gorm"
 )
 
 type CommentlModel struct {
-  database        *gorm.DB
+	database        *gorm.DB
 }
 
 func NewCommentlModel() CommentlModel {
-  return CommentlModel { database.GetDataBase() }
+	return CommentlModel { database.GetDataBase() }
 }
