@@ -16,8 +16,8 @@ func NewUserModel() UserModel {
 
 type FullUserInfo struct {
 	schema.User
-	Articles             int       `json:"articles"`
-	Flowers              int       `json:"flowers"`
+	Articles             int       `json:"articles"`    // 作品数
+	Flowers              int       `json:"flowers"`     // 粉丝数
 }
 
 func (um UserModel) GetFullUserInfo(userId int, fullUserInfo *FullUserInfo) {

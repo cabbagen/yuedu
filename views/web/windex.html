@@ -19,7 +19,11 @@
 							</strong>
 							<strong>
 								<i class="icon-microphone"></i>
-								<em>{{.article.Anchor}}</em>
+								<em>{{.userInfo.UserName}}</em>
+							</strong>
+							<strong>
+								<i class="icon-time"></i>
+								<em>{{.article.During | formatTimeDuring}}</em>
 							</strong>
 						</span>
 						<span>播放<em>{{.article.PlayNumber}}</em>次</span>
@@ -27,18 +31,112 @@
 					<section>
 						<img src="{{.article.CoverImg}}" />
 					</section>
+					<section class="article-player">
+                        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+                        <div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">
+                            <div class="jp-type-single">
+                                <div class="jp-gui jp-interface">
+                                    <div class="jp-controls-holder">
+                                        <div class="jp-controls">
+											<div class="jp-play">
+												<i class="icon icon-play"></i>
+											</div>
+                                            <div class="jp-pause">
+												<i class="icon icon-pause"></i>
+											</div>
+                                        </div>
+                                        <div class="jp-progress">
+                                            <div class="jp-seek-bar">
+                                                <div class="jp-play-bar"></div>
+                                            </div>
+                                        </div>
+                                        <div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+					</section>
 				</section>
 				<section class="article-content">
 					{{.article.ContentText | unescaped}}
 				</section>
 			</section>
 			<section class="article-reletive">
-				<section class="author-info">
-					{{.userInfo.UserName}}
+				<section class="author-content">
+					<div class="author-avator">
+						<img src="{{.userInfo.Avator}}" alt="avator" />
+					</div>
+					<div class="author-info">
+						<p class="author-name">
+							<span>{{.userInfo.UserName}}</span>
+                            <i class="icon-microphone"></i>
+						</p>
+						<div class="author-detail">
+							<div>
+								<p>作品数：{{.userInfo.Articles}}</p>
+								<p>粉丝数：{{.userInfo.Flowers}}</p>
+							</div>
+							<div class="author-opecation">
+								<span>关注</span>
+							</div>
+						</div>
+					</div>
+				</section>
+				<section class="article-reletive-detial">
+					<div>
+						<div class="article-reletive-detial-icon">
+                            <i class="icon icon-thumbs-up"></i>
+							<span>赞</span>
+						</div>
+                        <div class="article-reletive-detial-text">10</div>
+					</div>
+					<div>
+						<div class="article-reletive-detial-icon">
+                            <i class="icon icon-heart"></i>
+							<span>收藏</span>
+						</div>
+						<div class="article-reletive-detial-text">20</div>
+					</div>
+					<div>
+						<div class="article-reletive-detial-icon article-reletive-detial-shang">
+							<i>赏</i>
+							<span>打赏</span>
+                            <img src="http://yuedu.fm/static/file/dashang/ca6dddb3503418c59b431d2e702041bf" />
+						</div>
+					</div>
 				</section>
 			</section>
 		</section>
 	</body>
 
 	{{template "scripts"}}
+	<script type="text/javascript" src="/static/library/javascripts/jplayer/jquery.jplayer.min.js"></script>
+	<script type="text/javascript" src="/static/index/index.js"></script>
+	<script type="text/javascript">
+        $("#jquery_jplayer_1").jPlayer({
+            ready: function (event) {
+                $(this).jPlayer("setMedia", {
+                    title: "",
+                    mp3: "{{.article.Audio}}"
+                });
+            },
+            swfPath: "/static/library/javascripts/jplayer/jquery.jplayer.swf",
+            supplied: "mp3",
+            wmode: "window",
+            useStateClassSkin: true,
+            autoBlur: false,
+            smoothPlayBar: true,
+            keyEnabled: true,
+            remainingDuration: true,
+            toggleDuration: true
+        });
+        $('.jp-play').on('click', function () {
+            $(this).hide();
+			$('.jp-pause').show();
+        });
+        $('.jp-stop').on('click', function () {
+            $(this).hide();
+            $('.jp-pause').show();
+        })
+	</script>
 </html>

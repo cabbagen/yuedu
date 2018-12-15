@@ -8,8 +8,9 @@ import (
 var templatePath string = "./views/**/*.html"
 
 func SetUpTemplater(engine *gin.Engine) {
-	var myFuncMap template.FuncMap = template.FuncMap{
+	var myFuncMap template.FuncMap = template.FuncMap {
 		"unescaped": unescaped,
+		"formatTimeDuring": formatTimeDuring,
 	}
 	engine.SetFuncMap(myFuncMap)
 	engine.LoadHTMLGlob(templatePath)
