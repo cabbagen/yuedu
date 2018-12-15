@@ -24,19 +24,18 @@ func (ic IndexController) getIndexData() map[string]interface{} {
 	model.NewChannelModel().FindAll(&channels)
 
 	// - 获取类目下的文章
-	var article schema.Article
-	model.NewArticleModel().GetLastArticleByChannel(&article, 1)
+	var articleInfo model.FullArticleInfo
+	model.NewArticleModel().GetFullArticleInfo(0, &articleInfo)
 
 	// - 文章作者信息
 	var userInfo model.FullUserInfo
-	model.NewUserModel().GetFullUserInfo(article.Anchor, &userInfo)
+	model.NewUserModel().GetFullUserInfo(articleInfo.Anchor, &userInfo)
 
 	var indexData map[string]interface{} = map[string]interface{} {
 		"channels": channels,
-		"article": article,
+		"article": articleInfo,
 		"userInfo": userInfo,
 	}
 
 	return indexData
-	
 }
