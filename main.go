@@ -11,7 +11,9 @@ var app *gin.Engine = gin.Default()
 
 func init() {
 	database.Connect("mysql")
+
 	router.SetUpRouter(app)
+
 	ctemplate.SetUpTemplater(app)
 }
 

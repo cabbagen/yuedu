@@ -19,12 +19,15 @@ func (ic IndexController) HandleIndex(c *gin.Context) {
 
 func (ic IndexController) getIndexData() map[string]interface{} {
 
+	// - 获取所有频道
 	var channels []schema.Channel
 	model.NewChannelModel().FindAll(&channels)
 
+	// - 获取类目下的文章
 	var article schema.Article
 	model.NewArticleModel().GetLastArticleByChannel(&article, 1)
 
+	// - 文章作者信息
 	var userInfo model.FullUserInfo
 	model.NewUserModel().GetFullUserInfo(article.Anchor, &userInfo)
 

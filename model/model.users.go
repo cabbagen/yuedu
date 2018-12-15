@@ -19,8 +19,10 @@ type FullUserInfo struct {
 	Articles             int       `json:"articles"`
 	Flowers              int       `json:"flowers"`
 }
+
 func (um UserModel) GetFullUserInfo(userId int, fullUserInfo *FullUserInfo) {
 	um.database.Table("yd_users").Where("yd_users.id = ?", userId).Scan(fullUserInfo)
+
 	um.database.Table("yd_users").
 		Select("count(yd_articles.id) as articles, count(yd_relations.id) as flowsers").
 		Where("yd_users.id = ?", userId).
