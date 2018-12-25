@@ -4,6 +4,7 @@ import (
 	"yuedu/model"
 	"yuedu/schema"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type IndexController struct {
@@ -38,4 +39,16 @@ func (ic IndexController) getIndexData() map[string]interface{} {
 	}
 
 	return indexData
+}
+
+func (ic IndexController) GetArticleIno(c *gin.Context) {
+	articleId, articleErr := strconv.ParseInt(c.Param("id"), 10, 0)
+
+	if articleErr != nil {
+		panic(articleErr)
+	}
+
+	var articleInfo model.ArticleInfo = model.NewArticleModel().GetArticleInfoById(int(articleId))
+
+	c.JSON(200, articleInfo)
 }

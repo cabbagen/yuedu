@@ -60,6 +60,16 @@
 				<section class="article-content">
 					{{.article.ContentText | unescaped}}
 				</section>
+				<section class="article-tags">
+					<strong>标签：</strong>
+					{{range $name := .article.TagNames}}
+						<span>{{$name}}</span>
+					{{end}}
+				</section>
+				<section class="article-anchor">
+					<a href="#">上一篇</a>
+					<a href="#">下一篇</a>
+				</section>
 			</section>
 			<section class="article-reletive">
 				<section class="author-content">

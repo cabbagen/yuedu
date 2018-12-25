@@ -1,6 +1,6 @@
 .index-content {
 	width: 1010px;
-	margin: 40px auto 0 auto;
+	margin: 40px auto;
 	display: flex;
 	justify-content: space-between;
 }
@@ -74,6 +74,33 @@
 	padding: 30px;
 	box-sizing: border-box;
 	background-color: #ffffff;
+}
+.article-tags {
+	width: 620px;
+	padding: 0 30px;
+	height: 36px;
+	line-height: 36px;
+	box-sizing: border-box;
+	background-color: #ffffff;
+	margin-top: 15px;
+}
+.article-tags strong, .article-tags span {
+	margin-right: 10px;
+}
+.article-anchor {
+	display: flex;
+	margin-top: 30px;
+	justify-content: space-between;
+	padding: 0 30px;
+	box-sizing: border-box;
+}
+.article-anchor a {
+	color: #999999;
+	text-decoration: none;
+	font-size: 14px;
+}
+.article-anchor a:hover {
+	color: #ee5044;
 }
 
 

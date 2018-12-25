@@ -12,8 +12,8 @@ func unescaped (s string) interface{} {
 	return template.HTML(s)
 }
 
-func formatTimeDuring(s uint) interface{} {
-	timeString := strconv.FormatUint(uint64(s), 10) + "s"
+func formatTimeDuring(s int) interface{} {
+	timeString := strconv.FormatInt(int64(s), 10) + "s"
 	duration, durationErr := time.ParseDuration(timeString)
 
 	if durationErr != nil {
