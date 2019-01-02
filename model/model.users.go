@@ -2,7 +2,6 @@ package model
 
 import (
 	"yuedu/database"
-	"yuedu/schema"
 	"github.com/jinzhu/gorm"
 )
 
@@ -14,20 +13,31 @@ func NewUserModel() UserModel {
 	return UserModel { database.GetDataBase() }
 }
 
-type FullUserInfo struct {
-	schema.User
-	Articles             int       `json:"articles"`    // 作品数
-	Flowers              int       `json:"flowers"`     // 粉丝数
+
+// 用户信息实体
+type UserInfo struct {
+	Id                int        `json:"id"`
+	Username          string     `json:"username"`
+	Password          string     `json:"password"`
+	Gender            int        `json:"gender"`
+	Email             string     `json:"email"`
+	Address           int        `json:"address"`
+	Homepages         string     `json:"homepages"`
+	Avatar            string     `json:"avatar"`
+	Backdrop          string     `json:"backdrop"`
+	Extra             string     `json:"extra"`
+	Articles          int        `json:"articles"`    // 作品数
+	Flowers           int        `json:"flowers"`     // 粉丝数
 }
 
-func (um UserModel) GetFullUserInfo(userId int, fullUserInfo *FullUserInfo) {
-	um.database.Table("yd_users").Where("yd_users.id = ?", userId).Scan(fullUserInfo)
+func (um UserModel) GetUserInfo(userId int) UserInfo {
+	var userInfo UserInfo
 
-	um.database.Table("yd_users").
-		Select("count(yd_articles.id) as articles, count(yd_relations.id) as flowsers").
-		Where("yd_users.id = ?", userId).
-		Joins("left join yd_articles on yd_articles.anchor = yd_users.id").
-		Joins("left join yd_relations on yd_relations.relation_user_id = yd_users.id and yd_relations.relation_type != 1").
-		Group("yd_articles.anchor, yd_relations.relation_user_id").
-		Scan(fullUserInfo)
+	um.database.Table("yd_users").Where("id = ?", userId).Scan(&userInfo)
+
+	um.database.Table("yd_articles").Where("anchor = ?", userId).Count(&userInfo.Articles)
+
+	um.database.Table("yd_relations").Where("relation_user_id = ? and relation_type != 1", userId).Count(&userInfo.Flowers)
+
+	return userInfo
 }

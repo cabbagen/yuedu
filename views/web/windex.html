@@ -19,7 +19,7 @@
 							</strong>
 							<strong>
 								<i class="icon-microphone"></i>
-								<em>{{.userInfo.UserName}}</em>
+								<em>{{.article.AnchorInfo.Username}}</em>
 							</strong>
 							<strong>
 								<i class="icon-time"></i>
@@ -62,8 +62,8 @@
 				</section>
 				<section class="article-tags">
 					<strong>标签：</strong>
-					{{range $name := .article.TagNames}}
-						<span>{{$name}}</span>
+					{{range $tag := .article.Tags}}
+						<span>{{$tag.Name}}</span>
 					{{end}}
 				</section>
 				<section class="article-anchor">
@@ -74,17 +74,17 @@
 			<section class="article-reletive">
 				<section class="author-content">
 					<div class="author-avator">
-						<img src="{{.userInfo.Avator}}" alt="avator" />
+						<img src="{{.article.AnchorInfo.Avatar}}" alt="avatar" />
 					</div>
 					<div class="author-info">
 						<p class="author-name">
-							<span>{{.userInfo.UserName}}</span>
+							<span>{{.article.AnchorInfo.Username}}</span>
                             <i class="icon-microphone"></i>
 						</p>
 						<div class="author-detail">
 							<div>
-								<p>作品数：{{.userInfo.Articles}}</p>
-								<p>粉丝数：{{.userInfo.Flowers}}</p>
+								<p>作品数：{{.article.AnchorInfo.Articles}}</p>
+								<p>粉丝数：{{.article.AnchorInfo.Flowers}}</p>
 							</div>
 							<div class="author-opecation">
 								<span>关注</span>

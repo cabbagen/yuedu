@@ -15,6 +15,10 @@ func NewChannelModel() ChannelModel {
 }
 
 // - 获取所有频道
-func (cm ChannelModel) FindAll(channles *[]schema.Channel) {
-	cm.database.Find(channles)
+func (cm ChannelModel) GetAllChannels() []schema.Channel {
+	var channels []schema.Channel
+
+	cm.database.Find(&channels)
+
+	return channels
 }

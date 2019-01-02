@@ -8,7 +8,7 @@ type User struct {
 	Email            string       `gorm:"column:email;type=varchar(255);not null;default:\"\";unique" json:"email"`
 	Address          int          `gorm:"column:address;type=int;not null" json:"address"`
 	HomePages        string       `gorm:"column:homepages;type=varchar(255);not null;default:\"\"" json:"homepages"`
-	Avator           string       `gorm:"column:avator;type=varchar(255);not null;default:\"\"" json:"avator"`
+	Avatar           string       `gorm:"column:avatar;type=varchar(255);not null;default:\"\"" json:"avatar"`
 	Backdrop         string       `gorm:"column:backdrop;type=varchar(255);not null;default:\"\"" json:"backdrop"`
 	Extra            string       `gorm:"column:extra;type=varchar(255);not null;default:\"\"" json:"extra"`
 }

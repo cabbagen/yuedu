@@ -13,9 +13,4 @@ var indexRouter []descriptor = []descriptor {
 		method: "GET",
 		handlers:  []gin.HandlerFunc{ indexController.HandleIndex },
 	},
-	descriptor {
-		path: "/article/:id",
-		method: "GET",
-		handlers: []gin.HandlerFunc { indexController.GetArticleIno },
-	},
 }
