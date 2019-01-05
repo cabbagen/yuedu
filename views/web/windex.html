@@ -71,9 +71,9 @@
 					<a href="#">下一篇</a>
 				</section>
 			</section>
-			<section class="article-reletive">
+			<section class="article-relative">
 				<section class="author-content">
-					<div class="author-avator">
+					<div class="author-avatar">
 						<img src="{{.article.AnchorInfo.Avatar}}" alt="avatar" />
 					</div>
 					<div class="author-info">
@@ -92,28 +92,59 @@
 						</div>
 					</div>
 				</section>
-				<section class="article-reletive-detial">
+				<section class="article-relative-detail">
 					<div>
-						<div class="article-reletive-detial-icon">
+						<div class="article-relative-detail-icon">
                             <i class="icon icon-thumbs-up"></i>
 							<span>赞</span>
 						</div>
-                        <div class="article-reletive-detial-text">{{.article.Supports}}</div>
+                        <div class="article-relative-detail-text">{{.article.Supports}}</div>
 					</div>
 					<div>
-						<div class="article-reletive-detial-icon">
+						<div class="article-relative-detail-icon">
                             <i class="icon icon-heart"></i>
 							<span>收藏</span>
 						</div>
-						<div class="article-reletive-detial-text">{{.article.Collections}}</div>
+						<div class="article-relative-detail-text">{{.article.Collections}}</div>
 					</div>
 					<div>
-						<div class="article-reletive-detial-icon article-reletive-detial-shang">
+						<div class="article-relative-detail-icon article-relative-detail-shang">
 							<i>赏</i>
 							<span>打赏</span>
                             <img src="http://yuedu.fm/static/file/dashang/ca6dddb3503418c59b431d2e702041bf" />
 						</div>
 					</div>
+				</section>
+				<section class="article-relative-articles">
+					<h3>其他相关节目</h3>
+					<div class="article-relative-article-panel">
+						<div class="article-relative-article-panel-inner">
+							{{range $relativeArticle := .relativeArticlesArray}}
+								<ol>
+								{{range $article := $relativeArticle}}
+									<li>
+										<img src="{{$article.CoverImg}}" />
+										<p><a href="/article/{{$article.Id}}">{{$article.Title}}</a></p>
+									</li>
+								{{end}}
+								</ol>
+							{{end}}
+						</div>
+					</div>
+				</section>
+				<section class="other-channel-articles">
+					<h3>FM悦读频道其他节目</h3>
+					<ol>
+						{{range $article := .relativeArticlesByOtherChannel}}
+							<li>
+								<p><a href="/article/{{$article.Id}}">{{$article.Title}}</a></p>
+								<p>文：{{$article.Author}}  主播：{{$article.AnchorName}}</p>
+							</li>
+						{{end}}
+					</ol>
+				</section>
+				<section class="article-bottom-banner">
+					<img src="http://qingwenyi.com/smedia/upload/1526.jpg" />
 				</section>
 			</section>
 		</section>

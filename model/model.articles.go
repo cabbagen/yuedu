@@ -5,6 +5,7 @@ import (
 	"yuedu/schema"
 	"yuedu/database"
 	"github.com/jinzhu/gorm"
+	"log"
 )
 
 type ArticleModel struct {
@@ -71,21 +72,35 @@ type SimpleArticleInfo struct {
 func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) []SimpleArticleInfo {
 	var releasedArticleIds = am.GetReleaseArticleIdsByArticleId(articleId, limit)
 	var releasedArticles []SimpleArticleInfo
+	var query string = "yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text"
 
-	am.database.Table("yd_articles").Select("yd_articles.*, yd_users.username as anchorName").
+	rows, rowsErr := am.database.Table("yd_articles").Select(query).
 		Where("yd_articles.id in (?)", releasedArticleIds).
-		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
-		Scan(&releasedArticles)
+		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").Rows()
+
+	if rowsErr != nil {
+		log.Println(rowsErr)
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+
+		if err := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); err != nil {
+			log.Println(err)
+		}
+
+		releasedArticles = append(releasedArticles, article)
+	}
 
 	return releasedArticles
 }
 
 func (am ArticleModel) GetReleaseArticleIdsByArticleId(articleId int, limit int) []int {
-	var articleTagIds string
+	var articleTagIds []string
 
 	am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("tag_ids", &articleTagIds)
 
-	var mainTagId string = strings.Split(articleTagIds, ",")[0]
+	var mainTagId string = strings.Split(articleTagIds[0], ",")[0]
 
 	var articleIds []int
 
@@ -97,17 +112,31 @@ func (am ArticleModel) GetReleaseArticleIdsByArticleId(articleId int, limit int)
 
 // 获取指定文章其他类型的最新文章列表
 func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []SimpleArticleInfo {
-	var channelId int
-
+	var channelId []int
 	var otherArticles []SimpleArticleInfo
+	var query string = "yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text, max(yd_articles.id)"
 
 	am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("channel_id", &channelId)
 
-	am.database.Table("yd_articles").Select("yd_articles.*, yd_users.username as anchorName, max(yd_articles.id)").
-		Where("yd_articles.channel_id != ?", channelId).
+	rows, rowsErr := am.database.Table("yd_articles").Select(query).Where("yd_articles.channel_id != ?", channelId[0]).
 		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
 		Group("channel_id").
-		Scan(&otherArticles)
+		Rows()
+
+	if rowsErr != nil {
+		log.Println(rowsErr)
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+		var maxId int
+
+		if err := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText, &maxId); err != nil {
+			log.Println(err)
+		}
+
+		otherArticles = append(otherArticles, article)
+	}
 
 	return otherArticles;
 }

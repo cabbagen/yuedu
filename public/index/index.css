@@ -104,7 +104,7 @@
 }
 
 
-.article-reletive {
+.article-relative {
 	width: 360px;
 }
 .author-content {
@@ -115,11 +115,11 @@
 	justify-content: space-between;
 	color: #707070;
 }
-.author-avator {
+.author-avatar {
 	width: 80px;
 	height: 80px;
 }
-.author-avator img {
+.author-avatar img {
 	width: 100%;
 }
 .author-info {
@@ -143,7 +143,7 @@
 	top: 3px;
 	left: 0px;
 }
-.article-reletive-detial {
+.article-relative-detail {
 	padding: 20px 0;
 	font-size: 18px;
 	display: flex;
@@ -151,12 +151,12 @@
 	background-color: #ffffff;
 	color: #999999;
 }
-.article-reletive-detial > div {
+.article-relative-detail > div {
 	display: flex;
 	height: 50px;
 	line-height: 50px;
 }
-.article-reletive-detial-icon {
+.article-relative-detail-icon {
 	width: 50px;
 	height: 50px;
 	line-height: 50px;
@@ -165,24 +165,105 @@
 	border: 1px solid #cccccc;
 	border-radius: 50%;
 }
-.article-reletive-detial-icon i {
+.article-relative-detail-icon i {
 	font-style: normal;
 }
-.article-reletive-detial-icon span {
+.article-relative-detail-icon span {
 	display: none;
 	font-size: 12px;
 }
-.article-reletive-detial-text {
+.article-relative-detail-text {
 	margin-left: 12px;
 }
-.article-reletive-detial-shang {
+.article-relative-detail-shang {
 	position: relative;
 	top: 0px;
 	left: 0px;
 }
-.article-reletive-detial-shang img {
+.article-relative-detail-shang img {
 	display: none;
 	position: absolute;
 	top: -211px;
 	left: -53px;
+}
+.article-relative-articles {
+	background-color: #ffffff;
+	padding: 30px 30px 0px 30px;
+	margin-top: 30px;
+}
+.article-relative-articles h3 {
+	font-weight: bold;
+	font-size: 14px;
+	border-left: 3px solid #ee5044;
+	padding-left: 8px;
+	margin-bottom: 20px;
+}
+.article-relative-article-panel {
+	width: 300px;
+	overflow: hidden;
+}
+.article-relative-article-panel-inner {
+	width: 1500px;
+	display: flex;
+}
+.article-relative-articles ol {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+.article-relative-articles li {
+	width: 135px;
+}
+.article-relative-articles img {
+	width: 100%;
+	display: block;
+}
+.article-relative-articles p {
+	width: 100%;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+	margin: 10px 0 20px 0;
+}
+.article-relative-articles a {
+	color: #333333;
+	text-decoration: none;
+}
+.article-relative-articles a:hover {
+	color: #ee5044;
+}
+
+.other-channel-articles {
+	background-color: #ffffff;
+	padding: 30px;
+	margin-top: 30px;
+}
+.other-channel-articles h3 {
+	font-weight: bold;
+	font-size: 14px;
+	border-left: 3px solid #ee5044;
+	padding-left: 8px;
+	margin-bottom: 20px;
+}
+.other-channel-articles li {
+	border-bottom: 1px dashed #eeeeee;
+	padding: 8px 3px;
+	color: #999999;
+}
+.other-channel-articles li p {
+	line-height: 170%;
+}
+.other-channel-articles li a {
+	color: #070707;
+	text-decoration: none;
+}
+.other-channel-articles li a:hover {
+	color: #ee5044;
+}
+.article-bottom-banner {
+	width: 360px;
+	margin-top: 20px;
+}
+.article-bottom-banner img {
+	width: 100%;
 }

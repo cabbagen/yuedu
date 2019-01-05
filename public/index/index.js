@@ -2,7 +2,7 @@
 $(document).ready(function () {
 
     // 右侧点赞收藏
-    $(".article-reletive-detial-icon").each(function (index, element) {
+    $(".article-relative-detail-icon").each(function (index, element) {
         // 主播打赏额外处理
         if (index === 2) {
             $(element).hover(function () {
