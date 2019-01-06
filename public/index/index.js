@@ -20,4 +20,23 @@ $(document).ready(function () {
             });
         }
     });
+
+    // 相关文章
+    $(".article-relative-articles").find(".icon-angle-left").click(function () {
+        var $element = $(".article-relative-article-panel-inner");
+        var left = parseInt($element.css('left'), 10);
+
+        if (left > -1200) {
+            $element.animate({ left: (left - 300) + 'px' }, 300);
+        }
+    });
+
+    $(".article-relative-articles").find(".icon-angle-right").click(function () {
+        var $element = $(".article-relative-article-panel-inner");
+        var left = parseInt($element.css('left'), 10);
+
+        if (left < 0) {
+            $element.animate({ left: (left + 300) + 'px' }, 300);
+        }
+    })
 });

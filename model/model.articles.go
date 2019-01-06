@@ -118,7 +118,7 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 
 	am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("channel_id", &channelId)
 
-	rows, rowsErr := am.database.Table("yd_articles").Select(query).Where("yd_articles.channel_id != ?", channelId[0]).
+	rows, rowsErr := am.database.Debug().Table("yd_articles").Select(query).Where("yd_articles.channel_id != ?", channelId[0]).
 		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
 		Group("channel_id").
 		Rows()
@@ -136,6 +136,10 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 		}
 
 		otherArticles = append(otherArticles, article)
+	}
+
+	for _, value := range otherArticles {
+		log.Println(value.Title)
 	}
 
 	return otherArticles;

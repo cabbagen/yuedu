@@ -23,7 +23,7 @@
 							</strong>
 							<strong>
 								<i class="icon-time"></i>
-								<em>{{.article.During | formatTimeDuring}}</em>
+								<em class="article-during">{{.article.During | formatTimeDuring}}</em>
 							</strong>
 						</span>
 						<span>播放<em>{{.article.PlayNumber}}</em>次</span>
@@ -69,6 +69,33 @@
 				<section class="article-anchor">
 					<a href="#">上一篇</a>
 					<a href="#">下一篇</a>
+				</section>
+				<section class="article-comments-wrap">
+					<section class="send-article-comment">
+						<div class="send-article-comment-input">
+							<textarea placeholder="说点什么吧!" style="resize:none"></textarea>
+						</div>
+						<div class="send-article-comment-btn">
+							评论
+						</div>
+					</section>
+					<section class="article-comments">
+						<div class="article-comments-title">相关评论(2)</div>
+						<div class="article-comments-content">
+							<div>
+								<div class="article-comments-content-avatar">
+									<img src="http://yuedu.fm/static/file/member/4c0671f8839b3b7806bcf808a0d4f8dc">
+								</div>
+								<div class="article-comments-content-info">
+									<p>
+										<strong>苏小夏</strong>
+										<span>12018/12/26 14:05</span>
+									</p>
+									<p>你带回给我入川时的印象</p>
+								</div>
+							</div>
+						</div>
+					</section>
 				</section>
 			</section>
 			<section class="article-relative">
@@ -116,7 +143,13 @@
 					</div>
 				</section>
 				<section class="article-relative-articles">
-					<h3>其他相关节目</h3>
+					<h3>
+						<span>其他相关节目</span>
+						<span>
+							<i class="icon-angle-left"></i>
+							<i class="icon-angle-right"></i>
+						</span>
+					</h3>
 					<div class="article-relative-article-panel">
 						<div class="article-relative-article-panel-inner">
 							{{range $relativeArticle := .relativeArticlesArray}}
@@ -133,7 +166,10 @@
 					</div>
 				</section>
 				<section class="other-channel-articles">
-					<h3>FM悦读频道其他节目</h3>
+					<h3>
+						<span>FM悦读频道其他节目</span>
+						<a href="#">查看全部</a>
+					</h3>
 					<ol>
 						{{range $article := .relativeArticlesByOtherChannel}}
 							<li>

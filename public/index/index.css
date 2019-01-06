@@ -102,7 +102,69 @@
 .article-anchor a:hover {
 	color: #ee5044;
 }
-
+.article-comments-wrap {
+	margin: 30px 0;
+}
+.send-article-comment {
+	display: flex;
+}
+.article-comments-wrap .send-article-comment-input {
+	width: 550px;
+	height: 50px;
+	padding: 10px;
+	box-sizing: border-box;
+	background-color: #ffffff;
+}
+.article-comments-wrap .send-article-comment-input textarea {
+	width: 100%;
+	border: none;
+	outline: none;
+	color: #999999;
+}
+.article-comments-wrap .send-article-comment-btn {
+	background-color: #ee5044;
+	width: 70px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	color: #ffffff;
+}
+.article-comments {
+	margin-top: 20px;
+}
+.article-comments-title {
+	background: #ffffff;
+	color: #ee5044;
+	line-height: 40px;
+	font-size: 12px;
+	width: 100px;
+	text-align: center;
+}
+.article-comments-content {
+	width: 100%;
+	background-color: #ffffff;
+}
+.article-comments-content > div {
+	display: flex;
+	padding: 30px 20px;
+}
+.article-comments-content-avatar {
+	width: 50px;
+	height: 50px;
+}
+.article-comments-content-avatar img {
+	width: 100%;
+}
+.article-comments-content-info {
+	margin-left: 10px;
+}
+.article-comments-content-info p {
+	line-height: 200%;
+}
+.article-comments-content-info p strong {
+	margin-right: 50px;
+	font-size: 14px;
+}
 
 .article-relative {
 	width: 360px;
@@ -197,14 +259,30 @@
 	border-left: 3px solid #ee5044;
 	padding-left: 8px;
 	margin-bottom: 20px;
+	display: flex;
+	justify-content: space-between;
+}
+.article-relative-articles h3 i {
+	cursor: pointer;
+	margin-left: 10px;
+}
+.article-relative-articles h3 i:hover {
+	color: #ee5044;
 }
 .article-relative-article-panel {
 	width: 300px;
+	height: 280px;
 	overflow: hidden;
+	position: relative;
+	top: 0;
+	left: 0;
 }
 .article-relative-article-panel-inner {
 	width: 1500px;
 	display: flex;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 .article-relative-articles ol {
 	display: flex;
@@ -244,6 +322,17 @@
 	border-left: 3px solid #ee5044;
 	padding-left: 8px;
 	margin-bottom: 20px;
+	display: flex;
+	justify-content: space-between;
+}
+.other-channel-articles h3 a {
+	font-size: 12px;
+	text-decoration: none;
+	font-weight: normal;
+	color: #999999;
+}
+.other-channel-articles h3 a:hover {
+	color: #ee5044;
 }
 .other-channel-articles li {
 	border-bottom: 1px dashed #eeeeee;
