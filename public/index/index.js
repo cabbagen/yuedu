@@ -22,7 +22,7 @@ $(document).ready(function () {
     });
 
     // 相关文章
-    $(".article-relative-articles").find(".icon-angle-left").click(function () {
+    $(".article-relative-articles").find(".icon-angle-right").click(function () {
         var $element = $(".article-relative-article-panel-inner");
         var left = parseInt($element.css('left'), 10);
 
@@ -31,7 +31,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".article-relative-articles").find(".icon-angle-right").click(function () {
+    $(".article-relative-articles").find(".icon-angle-left").click(function () {
         var $element = $(".article-relative-article-panel-inner");
         var left = parseInt($element.css('left'), 10);
 

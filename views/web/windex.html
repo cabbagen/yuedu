@@ -82,18 +82,20 @@
 					<section class="article-comments">
 						<div class="article-comments-title">相关评论(2)</div>
 						<div class="article-comments-content">
-							<div>
-								<div class="article-comments-content-avatar">
-									<img src="http://yuedu.fm/static/file/member/4c0671f8839b3b7806bcf808a0d4f8dc">
-								</div>
-								<div class="article-comments-content-info">
-									<p>
-										<strong>苏小夏</strong>
-										<span>12018/12/26 14:05</span>
-									</p>
-									<p>你带回给我入川时的印象</p>
-								</div>
-							</div>
+							{{range $commentInfo := .comments}}
+                                <div>
+                                    <div class="article-comments-content-avatar">
+                                        <img src={{$commentInfo.UserAvatar}}>
+                                    </div>
+                                    <div class="article-comments-content-info">
+                                        <p>
+                                            <strong>{{$commentInfo.Username}}</strong>
+                                            <span>{{$commentInfo.CommentTime | formatTimeString}}</span>
+                                        </p>
+                                        <p>{{$commentInfo.CommentContent}}</p>
+                                    </div>
+                                </div>
+							{{end}}
 						</div>
 					</section>
 				</section>

@@ -3,6 +3,7 @@ package controller
 import (
 	"yuedu/model"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type IndexController struct {
@@ -26,6 +27,8 @@ func (ic IndexController) getIndexData() map[string]interface{} {
 
 	var articleModel model.ArticleModel = model.NewArticleModel()
 
+	var commentModal model.CommentlModel = model.NewCommentlModel()
+
 	var relativeArticles []model.SimpleArticleInfo = articleModel.GetReleasedArticlesByArticleId(indexArticleId, 20)
 
 	indexData["channels"] = channelModel.GetAllChannels()
@@ -35,6 +38,8 @@ func (ic IndexController) getIndexData() map[string]interface{} {
 	indexData["relativeArticlesArray"] = ic.AdaptRelativeArticlesArray(relativeArticles)
 
 	indexData["relativeArticlesByOtherChannel"] = articleModel.GetOtherChannelLastArticlesByArticleId(indexArticleId)
+
+	indexData["comments"] = commentModal.GetArticleCommentInfos(indexArticleId)
 
 	return indexData
 }
@@ -51,4 +56,24 @@ func (ic IndexController) AdaptRelativeArticlesArray(relativeArticles []model.Si
 	}
 
 	return relativeArticlesArray
+}
+
+func (ic IndexController) HandleComment(c *gin.Context) {
+	articleIdString, hasArticleIdString := c.GetQuery("articleId")
+
+	if !hasArticleIdString {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "articleId 不能为空"})
+		return
+	}
+
+	articleId, articleIdErr := strconv.Atoi(articleIdString)
+
+	if articleIdErr != nil {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "articleId 转换失败"})
+		return
+	}
+
+	var comments []model.CommentInfo = model.NewCommentlModel().GetArticleCommentInfos(int(articleId))
+
+	c.JSON(200, map[string]interface{} {"rc": 0, "data": comments})
 }

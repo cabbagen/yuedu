@@ -24,3 +24,15 @@ func formatTimeDuring(s int) interface{} {
 
 	return strings.TrimLeft(timesFormat, "0:")
 }
+
+func formatTimeString(s string) interface{} {
+	parsedTime, parseTimeErr := time.Parse(time.RFC3339, s)
+
+	if parseTimeErr != nil {
+		return ""
+	}
+
+	timesFormat := fmt.Sprintf("%d/%d/%d %d:%d:%d", parsedTime.Year(), parsedTime.Month() + 1, parsedTime.Day(), parsedTime.Hour(), parsedTime.Minute(), parsedTime.Second())
+
+	return strings.TrimLeft(timesFormat, "0:")
+}

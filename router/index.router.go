@@ -8,9 +8,14 @@ import (
 var indexController controller.IndexController;
 
 var indexRouter []descriptor = []descriptor {
-	descriptor {
+	descriptor{
 		path: "/index",
 		method: "GET",
 		handlers:  []gin.HandlerFunc{ indexController.HandleIndex },
+	},
+	descriptor{
+		path: "/comments",
+		method: "GET",
+		handlers: []gin.HandlerFunc { indexController.HandleComment },
 	},
 }

@@ -147,6 +147,10 @@
 .article-comments-content > div {
 	display: flex;
 	padding: 30px 20px;
+	border-bottom: 1px dashed #eeeeee;
+}
+.article-comments-content > div:last-child {
+	border-bottom: none;
 }
 .article-comments-content-avatar {
 	width: 50px;
