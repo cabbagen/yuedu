@@ -15,6 +15,7 @@ var routes []descriptor
 
 func init() {
 	routes = append(routes, indexRouter...)
+	routes = append(routes, loginRouter...)
 }
 
 func SetUpRouter(engine *gin.Engine) {

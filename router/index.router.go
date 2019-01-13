@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var indexController controller.IndexController;
+var indexController controller.IndexController
 
 var indexRouter []descriptor = []descriptor {
 	descriptor{

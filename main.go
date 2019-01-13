@@ -1,10 +1,10 @@
 package main
 
 import (
-	"yuedu/router"
+	"github.com/gin-gonic/gin"
 	"yuedu/ctemplate"
 	"yuedu/database"
-	"github.com/gin-gonic/gin"
+	"yuedu/router"
 )
 
 var app *gin.Engine = gin.Default()
