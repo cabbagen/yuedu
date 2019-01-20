@@ -36,13 +36,17 @@ html, body {
 	width: 70px;
 	text-align: center;
 }
-.common-opecation {
+.common-navigation a {
+	color: #777777;
+	text-decoration: none;
+}
+.common-operation {
 	float: right;
 }
-.common-opecation .common-search, .common-opecation .common-login {
+.common-operation .common-search, .common-operation .common-login {
 	float: left;
 }
-.common-opecation .common-search input {
+.common-operation .common-search input {
 	outline: none;
 	margin-right: 8px;
 	border-radius: 3px;
@@ -52,15 +56,102 @@ html, body {
 	height: 25px;
 	font-size: 12px;
 }
-.common-opecation .common-search i {
+.common-operation .common-search i {
 	cursor: pointer;
 }
-.common-opecation .common-login {
+.common-operation .common-login {
 	padding-left: 8px;
 }
-.common-opecation .common-login span {
+.common-operation .common-login span {
 	display: inline-block;
 	font-size: 12px;
 	width: 30px;
 	text-align: center;
+	cursor: pointer;
+}
+.common-login-panel-wrap {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0px;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 20;
+	display: none;
+}
+
+.common-login-panel {
+	width: 420px;
+	position: fixed;
+	top: 100px;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: #ffffff;
+	padding: 20px 35px;
+	border-radius: 5px;
+	box-sizing: border-box;
+}
+.common-login-panel h3 {
+	font-size: 20px;
+	line-height: 200%;
+	font-weight: normal;
+}
+.common-login-panel-content > div {
+	margin: 20px 0;
+	border-bottom: 1px solid #cccccc;
+}
+.common-login-panel-content input {
+	height: 28px;
+	line-height: 28px;
+	width: 100%;
+	border: none;
+	outline: none;
+}
+.common-login-panel-content-captcha {
+	display: flex;
+}
+.common-login-panel-content-captcha img {
+	width: 80px;
+	height: 25px;
+	cursor: pointer;
+	display: none;
+}
+.common-login-panel-content-captcha button {
+	background: #ecebeb;
+	width: 100px;
+	outline: none;
+	border: none;
+	height: 25px;
+	line-height: 25px;
+	cursor: pointer;
+}
+.common-login-panel-tip {
+	text-align: right;
+	color: #ee5044;
+}
+.common-login-panel-btn {
+	background-color: #ee5044;
+	width: 100%;
+	height: 35px;
+	line-height: 35px;
+	color: #ffffff;
+	text-align: center;
+	margin-top: 20px;
+	border-radius: 2px;
+	cursor: pointer;
+}
+.common-login-panel-close {
+	position: absolute;
+	top: -15px;
+	right: -15px;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background-color: #333333;
+	border-radius: 50%;
+	cursor: pointer;
+}
+.common-login-panel-close span {
+	color: #ffffff;
+	font-size: 20px;
 }

@@ -35,7 +35,13 @@ func (lc LoginController) GetCaptcha(c *gin.Context) {
 
 	var captchaBase64String = base64.StdEncoding.EncodeToString(imageBuffer.Bytes())
 
-	c.JSON(200, map[string]string {"captchaId": captchaId, "data": "data:image/png;base64," + captchaBase64String})
+	c.JSON(200, map[string]interface{} {
+		"rc": "0",
+		"data": map[string]string {
+			"captchaId": captchaId,
+			"img": "data:image/png;base64," + captchaBase64String,
+		},
+	})
 }
 
 // 校验验证码

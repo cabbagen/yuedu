@@ -141,3 +141,36 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 	return otherArticles;
 }
 
+
+// 获取指定频道的文章列表
+func (am ArticleModel) getArticlesByChannelId(channelId, pageNo, pageSize int) []SimpleArticleInfo {
+	var articles []SimpleArticleInfo
+
+	rows, error := am.database.Table("yd_articles").
+		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
+		Where("channel_id = ?", channelId).
+		Joins("inner join yd_users on yd_users.id = yd_articles.anchor").
+		Limit(pageSize).
+		Offset(pageNo * pageSize).
+		Rows()
+
+	if error != nil {
+		log.Println(error)
+		return articles
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
+			log.Println(error)
+			return articles
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles
+}
+
+

@@ -11,16 +11,17 @@ type descriptor struct {
 	handlers    []gin.HandlerFunc
 }
 
-var routes []descriptor
+var routers []descriptor
 
 func init() {
-	routes = append(routes, indexRouter...)
-	routes = append(routes, loginRouter...)
+	routers = append(routers, indexRouter...)
+	routers = append(routers, loginRouter...)
+	routers = append(routers, channelRouter...)
 }
 
 func SetUpRouter(engine *gin.Engine) {
-	for _, route := range routes {
-		engine.Handle(route.method, route.path, route.handlers...)
+	for _, router := range routers {
+		engine.Handle(router.method, router.path, router.handlers...)
 	}
 	if config.Application["static"] != "" {
 		engine.Static("static", config.Application["static"])

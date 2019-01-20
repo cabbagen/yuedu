@@ -7,19 +7,93 @@
 				</section>
 				<ul class="common-navigation">
 					{{range .channels}}
-						<li>{{.Name}}</li>
+						<li>
+							<a href="/channels/{{.ID}}" target="_blank">
+								{{.Name}}
+							</a>
+						</li>
 					{{end}}
 				</ul>
-				<section class="common-opecation">
+				<section class="common-operation">
 					<div class="common-search">
 						<input type="text" name="search" />
 						<i class="icon-search" title="查询搜索"></i>
 					</div>
 					<div class="common-login">
-						<span>登陆</span>
+						<span class="common-login-btn">登录</span>
 						<span>注册</span>
 					</div>
 				</section>
 		</section>
 	</header>
+	<section class="common-login-panel-wrap">
+        <section class="common-login-panel">
+            <h3>登录</h3>
+            <div class="common-login-panel-content">
+                <div>
+                    <input type="text" name="username" placeholder="请输入你的用户名" />
+                </div>
+                <div>
+                    <input type="password" name="password" placeholder="请输入你的密码" />
+                </div>
+				<div class="common-login-panel-content-captcha">
+					<input type="text" name="captcha" placeholder="请输入验证码" />
+					<img src="http://m.buoudd.com/dafdaababaaa420c98fe181709ef138c.png" />
+					<button>获取验证码</button>
+				</div>
+            </div>
+            <div class="common-login-panel-tip">
+                <span>忘记密码</span>
+            </div>
+            <div class="common-login-panel-btn">
+                登录
+            </div>
+            <section class="common-login-panel-close">
+                <span>x</span>
+            </section>
+        </section>
+	</section>
+	<script type="text/javascript">
+		// 登录
+		$('.common-login-btn').on('click', function () {
+			$('body').css({ height: '100%', overflow: 'hidden' });
+			$('.common-login-panel-wrap').show();
+        });
+
+		// 取消登录
+		$('.common-login-panel-close').on('click', function () {
+            $('body').css({ height: 'auto', overflow: 'visible' });
+            $('.common-login-panel-wrap').hide();
+        });
+
+		// 登录验证码
+		$('button', '.common-login-panel-content-captcha').on('click', function () {
+		    var $btnElement = $(this);
+
+			$.get('/captcha').then(function (result) {
+			    if (result.rc !== "0") {
+			        alert(result.msg);
+			        return;
+				}
+
+				$btnElement.hide().prev('img').show().attr("src", result.data.img).attr("data-captcha", result.data.captchaId);
+            });
+        });
+
+		// 再次获取验证码
+		$('img', '.common-login-panel-content-captcha').on('click', function () {
+		    var $imgElement = $(this);
+			var captchaId = $imgElement.attr('data-captcha');
+
+			$.get('/captcha', { captchaId: captchaId }).then(function (result) {
+				if (result.rc !== "0") {
+					alert(result.msg);
+					return;
+				}
+
+				$imgElement.attr('src', result.data.img);
+            });
+        });
+
+	</script>
 {{end}}
