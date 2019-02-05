@@ -143,15 +143,15 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 
 
 // 获取指定频道的文章列表
-func (am ArticleModel) getArticlesByChannelId(channelId, pageNo, pageSize int) []SimpleArticleInfo {
+func (am ArticleModel) GetArticlesByChannelId(channelId, page, size int) []SimpleArticleInfo {
 	var articles []SimpleArticleInfo
 
 	rows, error := am.database.Table("yd_articles").
 		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
 		Where("channel_id = ?", channelId).
 		Joins("inner join yd_users on yd_users.id = yd_articles.anchor").
-		Limit(pageSize).
-		Offset(pageNo * pageSize).
+		Limit(size).
+		Offset(page * size).
 		Rows()
 
 	if error != nil {
@@ -172,5 +172,15 @@ func (am ArticleModel) getArticlesByChannelId(channelId, pageNo, pageSize int) [
 
 	return articles
 }
+
+// 获取指定频道文章的总条数
+func (am ArticleModel) GetArticleCountByChannelId(channelId int) int {
+	var count int = 0
+
+	am.database.Table("yd_articles").Where("channel_id = ?", channelId).Count(&count)
+
+	return count
+}
+
 
 

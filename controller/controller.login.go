@@ -5,6 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"bytes"
 	"encoding/base64"
+	"yuedu/schema"
+	"yuedu/utils"
+	"yuedu/model"
+	"time"
 )
 
 type LoginController struct {
@@ -73,6 +77,44 @@ func (lc LoginController) ValidateCaptcha(c *gin.Context) {
 // 用户注册
 func (lc LoginController) Register(c *gin.Context) {
 
+	username, hasUsername := c.GetPostForm("username")
+
+	if !hasUsername {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "参数错误"})
+		return
+	}
+
+	password, hasPassword := c.GetPostForm("password")
+
+	if !hasPassword {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "参数错误"})
+		return
+	}
+
+	email, hasEmail := c.GetPostForm("email")
+
+	if !hasEmail {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "参数错误"})
+		return
+	}
+
+	var user schema.User = schema.User {
+		UserName: username,
+		PassWord: utils.MakeMD5(password),
+		Email: email,
+	}
+
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+
+	var isSuccess bool = model.NewUserModel().CreateUserInfo(user)
+
+	if !isSuccess {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "当前用户已存在"})
+		return
+	}
+
+	c.JSON(200, map[string]string {"rc": "0", "msg": "用户注册成功"})
 }
 
 // 忘记密码

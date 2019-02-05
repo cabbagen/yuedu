@@ -47,7 +47,7 @@ func (ic IndexController) AdaptRelativeArticlesArray(relativeArticles []model.Si
 	var relativeArticlesArray [][]model.SimpleArticleInfo
 
 	for index, article := range relativeArticles {
-		if index%4 > 0 {
+		if index % 4 > 0 {
 			relativeArticlesArray[len(relativeArticlesArray)-1] = append(relativeArticlesArray[len(relativeArticlesArray)-1], article)
 		} else {
 			relativeArticlesArray = append(relativeArticlesArray, []model.SimpleArticleInfo{article})
@@ -74,5 +74,5 @@ func (ic IndexController) HandleComment(c *gin.Context) {
 
 	var comments []model.CommentInfo = model.NewCommentlModel().GetArticleCommentInfos(int(articleId))
 
-	c.JSON(200, map[string]interface{}{"rc": 0, "data": comments})
+	c.JSON(200, map[string]interface{}{"rc": "0", "data": comments})
 }

@@ -11,6 +11,6 @@ var channelRouter []descriptor = []descriptor {
 	descriptor{
 		path: "/channels/:channelId",
 		method: "GET",
-		handlers:  []gin.HandlerFunc{ channelController.GetChannels },
+		handlers:  []gin.HandlerFunc{ channelController.GetChannelArticles },
 	},
 }

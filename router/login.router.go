@@ -18,4 +18,9 @@ var loginRouter []descriptor = []descriptor {
 		method: "GET",
 		handlers: []gin.HandlerFunc { loginController.ValidateCaptcha },
 	},
+	descriptor{
+		path: "/register",
+		method: "POST",
+		handlers: []gin.HandlerFunc { loginController.Register },
+	},
 }

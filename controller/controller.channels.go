@@ -1,6 +1,10 @@
 package controller
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"strconv"
+	"yuedu/model"
+)
 
 type ChannelController struct {
 	Controller
@@ -10,28 +14,35 @@ func (cc ChannelController) RenderChannel(c *gin.Context) {
 
 }
 
-func (cc ChannelController) GetChannels(c *gin.Context) {
-	channelId, hasChannelId := c.GetQuery("channelId")
+func (cc ChannelController) GetChannelArticles(c *gin.Context) {
 
-	pageNo, hasPageNo := c.GetQuery("pageNo")
+	channelId, error := strconv.Atoi(c.Param("channelId"))
 
-	pageSize, hasPageSize := c.GetQuery("pageSize")
-
-	if !hasChannelId {
-		c.JSON(200, "channelId 不能为空")
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "请求参数错误"})
 		return
 	}
 
-	if !hasPageNo {
-		c.JSON(200, "pageNo 不能为空")
+	page, error := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "请求参数错误"})
 		return
 	}
 
-	if !hasPageSize {
-		c.JSON(200, "pageSize 不能为空")
+	size, error := strconv.Atoi(c.DefaultQuery("size", "20"))
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "请求参数错误"})
 		return
 	}
 
+	var articleModel model.ArticleModel = model.NewArticleModel()
 
-	c.JSON(200, "yeah!" + channelId + pageNo + pageSize)
+	var articles []model.SimpleArticleInfo = articleModel.GetArticlesByChannelId(channelId, page, size)
+
+	var count int = articleModel.GetArticleCountByChannelId(channelId)
+
+	c.JSON(200, map[string]interface{} {"articles": articles, "count": count, "rc": "0"})
+
 }
