@@ -12,11 +12,29 @@ type ChannelController struct {
 
 func (cc ChannelController) RenderChannel(c *gin.Context) {
 
+	channelId, _ := strconv.Atoi(c.Param("channelId"))
+
+	channelData := cc.GetChannelData(channelId)
+
+	c.HTML(200, "wchannels.html", channelData)
+}
+
+func (cc ChannelController) GetChannelData(channelId int) map[string]interface{} {
+	var channelData map[string]interface{} = make(map[string]interface{})
+	var articleModel model.ArticleModel = model.NewArticleModel()
+
+	channelData["channels"] = model.NewChannelModel().GetAllChannels()
+	channelData["articles"] = articleModel.GetArticlesByChannelId(channelId, 0, 10)
+	channelData["topArticles"] = articleModel.GetTopArticles(channelId, 10)
+	channelData["count"] = articleModel.GetArticleCountByChannelId(channelId)
+
+
+	return channelData
 }
 
 func (cc ChannelController) GetChannelArticles(c *gin.Context) {
 
-	channelId, error := strconv.Atoi(c.Param("channelId"))
+	channelId, error := strconv.Atoi(c.DefaultQuery("channelId", "1"))
 
 	if error != nil {
 		c.JSON(200, map[string]string {"rc": "1", "msg": "请求参数错误"})
@@ -30,7 +48,7 @@ func (cc ChannelController) GetChannelArticles(c *gin.Context) {
 		return
 	}
 
-	size, error := strconv.Atoi(c.DefaultQuery("size", "20"))
+	size, error := strconv.Atoi(c.DefaultQuery("size", "10"))
 
 	if error != nil {
 		c.JSON(200, map[string]string {"rc": "1", "msg": "请求参数错误"})

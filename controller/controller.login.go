@@ -75,7 +75,7 @@ func (lc LoginController) ValidateCaptcha(c *gin.Context) {
 }
 
 // 用户注册
-func (lc LoginController) Register(c *gin.Context) {
+func (lc LoginController) HandleRegister(c *gin.Context) {
 
 	username, hasUsername := c.GetPostForm("username")
 

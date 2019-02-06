@@ -2,7 +2,7 @@
 
 (function ($) {
     $.fn.extends({
-        player: function () {
+        init: function (size, total, callBack) {
             
         }
     });

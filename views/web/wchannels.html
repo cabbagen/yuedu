@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "head"}}
+    <link href="/static/channels/channels.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    {{template "navigation" .}}
+    <section class="channel-content">
+        <section class="channel-articles-wrap">
+            {{range $article := .articles}}
+                <div class="channel-article">
+                    <div class="channel-article-img">
+                        <img src="{{$article.CoverImg}}" />
+                    </div>
+                    <div class="channel-article-info">
+                        <h3 class="channel-article-info-title">{{$article.Title}}</h3>
+                        <div class="channel-article-info-summary">
+                            <div>
+                                <i class="icon-pencil"></i>
+                                <span>{{$article.Author}}</span>
+                            </div>
+                            <div>
+                                <i class="icon-microphone"></i>
+                                <span>{{$article.AnchorName}}</span>
+                            </div>
+                            <div>
+                                <i class="icon-time"></i>
+                                <span>{{$article.During | formatTimeDuring}}</span>
+                            </div>
+                            <div>
+                                <i class="icon-headphones"></i>
+                                <span>{{$article.PlayNumber}}</span>
+                            </div>
+                        </div>
+                        <div class="channel-article-info-detail">
+                            {{$article.ContentText | removeHtmlTags}}
+                        </div>
+                    </div>
+                </div>
+            {{end}}
+        </section>
+        <section class="channel-top-articles-wrap">
+            <div>
+                <img src="http://yuedu.fm/static/website/images/yueduwx_2.jpg" />
+            </div>
+            <div class="channel-top-articles">
+                <h2>悦读频道 top10</h2>
+                <ol>
+                    {{range $article := .topArticles}}
+                        <li class="channel-top-article">
+                            <p>{{$article.Title}}</p>
+                            <p>
+                                <span>文：{{$article.Author}}</span>
+                                <span>主播：{{$article.AnchorName}}</span>
+                            </p>
+                        </li>
+                    {{end}}
+                </ol>
+            </div>
+            <div>
+                <img src="http://qingwenyi.com/smedia/upload/1529.jpg" />
+            </div>
+        </section>
+    </section>
+</body>
+
+</html>

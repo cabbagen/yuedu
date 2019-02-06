@@ -12,6 +12,7 @@ func SetUpTemplater(engine *gin.Engine) {
 		"unescaped": unescaped,
 		"formatTimeDuring": formatTimeDuring,
 		"formatTimeString": formatTimeString,
+		"removeHtmlTags": removeHtmlTags,
 	}
 	engine.SetFuncMap(myFuncMap)
 	engine.LoadHTMLGlob(templatePath)

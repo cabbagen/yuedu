@@ -6,6 +6,7 @@ import (
 	"strings"
 	"strconv"
 	"html/template"
+	"regexp"
 )
 
 func unescaped (s string) interface{} {
@@ -35,4 +36,10 @@ func formatTimeString(s string) interface{} {
 	timesFormat := fmt.Sprintf("%d/%d/%d %d:%d:%d", parsedTime.Year(), parsedTime.Month() + 1, parsedTime.Day(), parsedTime.Hour(), parsedTime.Minute(), parsedTime.Second())
 
 	return strings.TrimLeft(timesFormat, "0:")
+}
+
+func removeHtmlTags(s string) interface{} {
+	tagRegExp := regexp.MustCompile("<.+?>")
+
+	return tagRegExp.ReplaceAllString(s, "")
 }

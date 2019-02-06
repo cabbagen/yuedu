@@ -21,6 +21,6 @@ var loginRouter []descriptor = []descriptor {
 	descriptor{
 		path: "/register",
 		method: "POST",
-		handlers: []gin.HandlerFunc { loginController.Register },
+		handlers: []gin.HandlerFunc { loginController.HandleRegister },
 	},
 }

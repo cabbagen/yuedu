@@ -72,21 +72,22 @@ type SimpleArticleInfo struct {
 func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) []SimpleArticleInfo {
 	var releasedArticleIds = am.GetReleaseArticleIdsByArticleId(articleId, limit)
 	var releasedArticles []SimpleArticleInfo
-	var query string = "yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text"
 
-	rows, rowsErr := am.database.Table("yd_articles").Select(query).
+	rows, error := am.database.Table("yd_articles").
+		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
 		Where("yd_articles.id in (?)", releasedArticleIds).
-		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").Rows()
+		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
+		Rows()
 
-	if rowsErr != nil {
-		log.Println(rowsErr)
+	if error != nil {
+		log.Println(error)
 	}
 
 	for rows.Next() {
 		var article SimpleArticleInfo = SimpleArticleInfo{}
 
-		if err := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); err != nil {
-			log.Println(err)
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
+			log.Println(error)
 		}
 
 		releasedArticles = append(releasedArticles, article)
@@ -118,21 +119,21 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 
 	am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("channel_id", &channelId)
 
-	rows, rowsErr := am.database.Table("yd_articles").Select(query).Where("yd_articles.channel_id != ?", channelId[0]).
+	rows, error := am.database.Table("yd_articles").Select(query).Where("yd_articles.channel_id != ?", channelId[0]).
 		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
 		Group("channel_id").
 		Rows()
 
-	if rowsErr != nil {
-		log.Println(rowsErr)
+	if error != nil {
+		log.Println(error)
 	}
 
 	for rows.Next() {
 		var article SimpleArticleInfo = SimpleArticleInfo{}
 		var maxId int
 
-		if err := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText, &maxId); err != nil {
-			log.Println(err)
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText, &maxId); error != nil {
+			log.Println(error)
 		}
 
 		otherArticles = append(otherArticles, article)
@@ -173,6 +174,7 @@ func (am ArticleModel) GetArticlesByChannelId(channelId, page, size int) []Simpl
 	return articles
 }
 
+
 // 获取指定频道文章的总条数
 func (am ArticleModel) GetArticleCountByChannelId(channelId int) int {
 	var count int = 0
@@ -183,4 +185,70 @@ func (am ArticleModel) GetArticleCountByChannelId(channelId int) int {
 }
 
 
+// 根据点赞数目查询指定类目最受欢迎的文章
+func (am ArticleModel) GetTopArticles(channelId, numbers int) []SimpleArticleInfo {
+	var articles []SimpleArticleInfo
 
+	rows, error := am.database.Table("yd_supports").
+		Select("count(*) as number, yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
+		Joins("inner join yd_articles on yd_articles.id = yd_supports.article_id and channel_id = ?", channelId).
+		Joins("inner join yd_users on yd_users.id = yd_articles.anchor").
+		Group("article_id").
+		Order("number desc").
+		Limit(numbers).
+		Rows()
+
+	if error != nil {
+		log.Println(error)
+		return articles
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+		var count int
+
+		if error := rows.Scan(&count, &article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
+			log.Println(error)
+			return articles
+		}
+
+		articles = append(articles, article)
+	}
+
+	if len(articles) < numbers {
+		articles = append(articles, am.GetLastNewArticles(channelId, numbers - len(articles))...)
+	}
+
+	return articles
+}
+
+// 获取指定类目最新的文章
+func (am ArticleModel) GetLastNewArticles(channelId, numbers int) []SimpleArticleInfo {
+	var articles []SimpleArticleInfo
+
+	rows, error := am.database.Table("yd_articles").
+		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
+		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
+		Where("channel_id = ?", channelId).
+		Limit(numbers).
+		Order("yd_articles.created_at desc").
+		Rows()
+
+	if error != nil {
+		log.Println(error)
+		return  articles
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
+			log.Println(error)
+			return articles
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles
+}
