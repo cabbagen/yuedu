@@ -9,37 +9,41 @@
     {{template "navigation" .}}
     <section class="channel-content">
         <section class="channel-articles-wrap">
-            {{range $article := .articles}}
-                <div class="channel-article">
-                    <div class="channel-article-img">
-                        <img src="{{$article.CoverImg}}" />
-                    </div>
-                    <div class="channel-article-info">
-                        <h3 class="channel-article-info-title">{{$article.Title}}</h3>
-                        <div class="channel-article-info-summary">
-                            <div>
-                                <i class="icon-pencil"></i>
-                                <span>{{$article.Author}}</span>
+            <div class="channel-articles">
+                {{range $article := .articles}}
+                    <div class="channel-article">
+                        <div class="channel-article-img">
+                            <img src="{{$article.CoverImg}}" />
+                        </div>
+                        <div class="channel-article-info">
+                            <h3 class="channel-article-info-title">{{$article.Title}}</h3>
+                            <div class="channel-article-info-summary">
+                                <div>
+                                    <i class="icon-pencil"></i>
+                                    <span>{{$article.Author}}</span>
+                                </div>
+                                <div>
+                                    <i class="icon-microphone"></i>
+                                    <span>{{$article.AnchorName}}</span>
+                                </div>
+                                <div>
+                                    <i class="icon-time"></i>
+                                    <span>{{$article.During | formatTimeDuring}}</span>
+                                </div>
+                                <div>
+                                    <i class="icon-headphones"></i>
+                                    <span>{{$article.PlayNumber}}</span>
+                                </div>
                             </div>
-                            <div>
-                                <i class="icon-microphone"></i>
-                                <span>{{$article.AnchorName}}</span>
-                            </div>
-                            <div>
-                                <i class="icon-time"></i>
-                                <span>{{$article.During | formatTimeDuring}}</span>
-                            </div>
-                            <div>
-                                <i class="icon-headphones"></i>
-                                <span>{{$article.PlayNumber}}</span>
+                            <div class="channel-article-info-detail">
+                                {{$article.ContentText | removeHtmlTags}}
                             </div>
                         </div>
-                        <div class="channel-article-info-detail">
-                            {{$article.ContentText | removeHtmlTags}}
-                        </div>
                     </div>
-                </div>
-            {{end}}
+                {{end}}
+            </div>
+            <div class="channel-pagination">
+            </div>
         </section>
         <section class="channel-top-articles-wrap">
             <div>
@@ -64,6 +68,77 @@
             </div>
         </section>
     </section>
-</body>
 
+    {{template "footer"}}
+
+</body>
+<script type="text/javascript" src="/static/library/javascripts/plugs/pagination.jquery.js"></script>
+<script type="text/javascript">
+    function formatTimeDuring(time) {
+        return Math.floor(time / 60) + ":" + time % 60;
+    }
+
+    function removeHtmlTags(html) {
+        return html.replace(/<.+?>/g, '');
+    }
+
+    function renderArticles(articles) {
+        var domstring = '';
+
+        articles.forEach(function(article) {
+            var dom = [
+                '<div class="channel-article">',
+                    '<div class="channel-article-img">',
+                        '<img src="' + article.coverImg + '" />',
+                    '</div>',
+                    '<div class="channel-article-info">',
+                        '<h3 class="channel-article-info-title">' + article.title + '</h3>',
+                        '<div class="channel-article-info-summary">',
+                            '<div>',
+                                '<i class="icon-pencil"></i>',
+                                '<span style="margin-left: 5px">' + article.author + '</span>',
+                            '</div>',
+                            '<div>',
+                                '<i class="icon-microphone"></i>',
+                                '<span style="margin-left: 5px">' + article.anchorName + '</span>',
+                            '</div>',
+                            '<div>',
+                                '<i class="icon-time"></i>',
+                                '<span style="margin-left: 5px">' + formatTimeDuring(article.during) + '</span>',
+                            '</div>',
+                            '<div>',
+                                '<i class="icon-headphones"></i>',
+                                '<span style="margin-left: 5px">' + article.playNumber + '</span>',
+                            '</div>',
+                        '</div>',
+                        '<div class="channel-article-info-detail">',
+                            removeHtmlTags(article.contentText),
+                        '</div>',
+                    '</div>',
+                '</div>',
+            ].join('');
+
+            domstring += dom;
+        });
+
+        $('.channel-articles').html(domstring);
+    }
+
+    var pagination = new Pagination($('.channel-pagination'), 10, {{.count}}, function (current, size) {
+        $.ajax({
+            url: '/channel/articles?channelId=' + window.location.pathname.split('/')[2] + '&size=' + size + '&page=' + (current - 1),
+            method: 'GET',
+            dataType: 'json',
+        }).then(function (data) {
+            if (data.rc !== '0') {
+                alert(data.msg);
+                return;
+            }
+
+            renderArticles(data.articles);
+        })
+    });
+
+    pagination.init();
+</script>
 </html>

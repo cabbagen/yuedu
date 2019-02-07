@@ -40,6 +40,25 @@
     -webkit-box-orient: vertical;
     line-height: 170%;
 }
+.channel-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+.channel-pagination span {
+    cursor: pointer;
+}
+.channel-pagination ol {
+    display: flex;
+    margin: 0 20px;
+}
+.channel-pagination ol li {
+    margin: 0 10px;
+    cursor: pointer;
+}
+.channel-pagination ol li.actived {
+    color: #ee5044;
+}
 
 .channel-top-articles-wrap {
     width: 360px;
