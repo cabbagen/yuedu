@@ -4,6 +4,7 @@ import (
 	"yuedu/database"
 	"github.com/jinzhu/gorm"
 	"yuedu/schema"
+	"yuedu/utils"
 )
 
 type UserModel struct {
@@ -45,7 +46,6 @@ func (um UserModel) GetUserInfo(userId int) UserInfo {
 
 // 新建用户
 func (um UserModel) CreateUserInfo(user schema.User) bool {
-
 	var userInfo schema.User
 
 	um.database.Table("yd_users").Where("username = ?", user.UserName).First(&userInfo)
@@ -57,4 +57,12 @@ func (um UserModel) CreateUserInfo(user schema.User) bool {
 	um.database.Create(&user)
 
 	return true
+}
+
+func (um UserModel) ValidateUserInfo(username, password string) bool {
+	var userInfo schema.User
+
+	um.database.Table("yd_users").Where("username = ? and password = ?", username, utils.MakeMD5(password)).First(&userInfo)
+
+	return userInfo.ID > 0
 }

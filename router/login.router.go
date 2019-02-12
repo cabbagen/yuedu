@@ -14,13 +14,13 @@ var loginRouter []descriptor = []descriptor {
 		handlers: []gin.HandlerFunc { loginController.GetCaptcha },
 	},
 	descriptor{
-		path: "/validateCaptcha",
-		method: "GET",
-		handlers: []gin.HandlerFunc { loginController.ValidateCaptcha },
-	},
-	descriptor{
 		path: "/register",
 		method: "POST",
 		handlers: []gin.HandlerFunc { loginController.HandleRegister },
+	},
+	descriptor{
+		path: "/login",
+		method: "POST",
+		handlers: []gin.HandlerFunc { loginController.Login },
 	},
 }

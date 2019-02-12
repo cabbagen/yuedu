@@ -96,6 +96,22 @@
 				$imgElement.attr('src', result.data.img);
             });
         });
+
+		// 登录
+		$('.common-login-panel-btn').on('click', function () {
+		    var username = $('input[name="username"]', '.common-login-panel-wrap').val().trim();
+		    var password = $('input[name="password"]', '.common-login-panel-wrap').val().trim();
+            var captchaId = $('img', '.common-login-panel-content-captcha').attr('data-captcha');
+            var captchaDigits = $('input[name="captcha"]', '.common-login-panel-wrap').val().trim();
+
+            // if (!username || !password || !captchaId || !captchaDigits) {
+             //    alert("请将信息填充完整")
+			// }
+
+			$.post('/login', { username: username, password: password, captchaId: captchaId, captchaDigits: captchaDigits}).then(function (result) {
+				console.log(result);
+            })
+        });
 	</script>
 
 	{{/* 注册模态框 */}}

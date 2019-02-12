@@ -5,7 +5,6 @@ import (
 	"yuedu/ctemplate"
 	"yuedu/database"
 	"yuedu/router"
-	"yuedu/middleware"
 )
 
 var app *gin.Engine = gin.Default()
@@ -14,9 +13,7 @@ func init() {
 	database.Connect("mysql")
 
 	router.SetUpRouter(app)
-
-	middleware.SetUpMiddleware(app)
-
+	
 	ctemplate.SetUpTemplater(app)
 }
 

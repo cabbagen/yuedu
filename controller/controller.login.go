@@ -9,6 +9,7 @@ import (
 	"yuedu/utils"
 	"yuedu/model"
 	"time"
+	"yuedu/middleware"
 )
 
 type LoginController struct {
@@ -17,7 +18,52 @@ type LoginController struct {
 
 // 用户登录
 func (lc LoginController) Login(c *gin.Context) {
+	username, hasUsername := c.GetPostForm("username")
 
+	if !hasUsername {
+		c.JSON(200, map[string]string{"rc": "1", "msg": "请输入用户名"})
+		return
+	}
+
+	password, hasPassword := c.GetPostForm("password")
+
+	if !hasPassword {
+		c.JSON(200, map[string]string{"rc": "1", "msg": "请输入密码"})
+		return
+	}
+
+	captchaId, hasCaptchaId := c.GetPostForm("captchaId")
+
+	if !hasCaptchaId {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "captchaId 不存在"})
+		return
+	}
+
+	captchaDigits, hasCaptchaDigits := c.GetPostForm("captchaDigits")
+
+	if !hasCaptchaDigits {
+		c.JSON(200, map[string]string {"rc": "1", "msg": "hasCaptchaDigits 不存在"})
+		return
+	}
+
+	if isValid := lc.ValidateCaptcha(captchaId, captchaDigits); !isValid {
+		c.JSON(200, map[string]string {"rc": "2", "msg": "验证码已过期"})
+		return
+	}
+
+	if isExist := model.NewUserModel().ValidateUserInfo(username, password); !isExist {
+		c.JSON(200, map[string]string {"rc": "3", "msg": "用户名密码错误"})
+		return
+	}
+
+	token, error := middleware.NewTokenMiddleware().SignToken(username)
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "4", "msg": "token 生成错误: " + error.Error()})
+		return
+	}
+
+	c.JSON(200, map[string]string {"rc": "0", "data": token})
 }
 
 // 生成验证码
@@ -33,7 +79,7 @@ func (lc LoginController) GetCaptcha(c *gin.Context) {
 	var imageBuffer *bytes.Buffer = bytes.NewBuffer([]byte{})
 
 	if error := captcha.WriteImage(imageBuffer, captchaId, captcha.StdWidth, captcha.StdHeight); error != nil {
-		c.JSON(200, map[string]string {"rc": "1", "msg": "生成验证码错误"})
+		c.JSON(200, map[string]string {"rc": "1", "msg": "生成验证码错误, 请刷新页面重试"})
 		return
 	}
 
@@ -49,29 +95,8 @@ func (lc LoginController) GetCaptcha(c *gin.Context) {
 }
 
 // 校验验证码
-func (lc LoginController) ValidateCaptcha(c *gin.Context) {
-	captchaId, hasCaptchaId := c.GetQuery("captchaId")
-
-	captchaDigits, hasCaptchaDigits := c.GetQuery("captchaDigits")
-
-	if !hasCaptchaId {
-		c.JSON(200, map[string]string {"rc": "1", "msg": "captchaId 不存在"})
-		return
-	}
-
-	if !hasCaptchaDigits {
-		c.JSON(200, map[string]string {"rc": "1", "msg": "hasCaptchaDigits 不存在"})
-		return
-	}
-
-	var isValidated bool = captcha.VerifyString(captchaId, captchaDigits)
-
-	if !isValidated {
-		c.JSON(200, map[string]string {"rc": "1", "data": "验证失败"})
-		return
-	}
-
-	c.JSON(200, map[string]string {"rc": "0", "data": "验证通过"})
+func (lc LoginController) ValidateCaptcha(captchaId, captchaDigits string) bool {
+	return captcha.VerifyString(captchaId, captchaDigits)
 }
 
 // 用户注册
@@ -80,21 +105,21 @@ func (lc LoginController) HandleRegister(c *gin.Context) {
 	username, hasUsername := c.GetPostForm("username")
 
 	if !hasUsername {
-		c.JSON(200, map[string]string {"rc": "1", "msg": "参数错误"})
+		c.JSON(200, map[string]string {"rc": "1", "msg": "请输入用户名"})
 		return
 	}
 
 	password, hasPassword := c.GetPostForm("password")
 
 	if !hasPassword {
-		c.JSON(200, map[string]string {"rc": "1", "msg": "参数错误"})
+		c.JSON(200, map[string]string {"rc": "1", "msg": "请输入用户密码"})
 		return
 	}
 
 	email, hasEmail := c.GetPostForm("email")
 
 	if !hasEmail {
-		c.JSON(200, map[string]string {"rc": "1", "msg": "参数错误"})
+		c.JSON(200, map[string]string {"rc": "1", "msg": "请输入用户邮箱"})
 		return
 	}
 
