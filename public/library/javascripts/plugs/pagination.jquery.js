@@ -131,6 +131,7 @@ Pagination.prototype = {
         if (this.count <= this.numbers) {
             this.init();
             this.callback(this.current, this.size);
+
             return;
         }
 
