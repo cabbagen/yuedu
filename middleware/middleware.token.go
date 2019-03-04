@@ -68,10 +68,7 @@ func (tm TokenMiddleware) ValidateToken(tokenString string) (string, bool) {
 }
 
 func NewTokenMiddleware() TokenMiddleware {
-	return TokenMiddleware{
-		Key: "token-middleware",
-		Name: "token",
-	}
+	return TokenMiddleware { Key: "token-middleware", Name: "token" }
 }
 
 

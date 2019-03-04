@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"yuedu/model"
+	"github.com/gin-gonic/gin"
 )
 
 type IndexController struct {
@@ -11,36 +11,30 @@ type IndexController struct {
 }
 
 func (ic IndexController) HandleIndex(c *gin.Context) {
-	var indexData map[string]interface{} = ic.getIndexData()
+	indexData := ic.getIndexData()
+
+	if userInfo, isExist := ic.GetUserInfo(c); isExist {
+		indexData["userInfo"] = userInfo
+	}
 
 	c.HTML(200, "windex.html", indexData)
 }
 
 func (ic IndexController) getIndexData() map[string]interface{} {
 
-	var indexData map[string]interface{} = make(map[string]interface{})
+	indexArticleId := 354
 
-	var indexArticleId int = 354
+	channelModel, articleModel, commentModal := model.NewChannelModel(), model.NewArticleModel(), model.NewCommentlModel()
 
-	var channelModel model.ChannelModel = model.NewChannelModel()
+	relativeArticles := articleModel.GetReleasedArticlesByArticleId(indexArticleId, 20)
 
-	var articleModel model.ArticleModel = model.NewArticleModel()
-
-	var commentModal model.CommentlModel = model.NewCommentlModel()
-
-	var relativeArticles []model.SimpleArticleInfo = articleModel.GetReleasedArticlesByArticleId(indexArticleId, 20)
-
-	indexData["channels"] = channelModel.GetAllChannels()
-
-	indexData["article"] = articleModel.GetArticleInfoById(indexArticleId)
-
-	indexData["relativeArticlesArray"] = ic.AdaptRelativeArticlesArray(relativeArticles)
-
-	indexData["relativeArticlesByOtherChannel"] = articleModel.GetOtherChannelLastArticlesByArticleId(indexArticleId)
-
-	indexData["comments"] = commentModal.GetArticleCommentInfos(indexArticleId)
-
-	return indexData
+	return map[string]interface{} {
+		"channels": channelModel.GetAllChannels(),
+		"article": articleModel.GetArticleInfoById(indexArticleId),
+		"relativeArticlesArray": ic.AdaptRelativeArticlesArray(relativeArticles),
+		"relativeArticlesByOtherChannel": articleModel.GetOtherChannelLastArticlesByArticleId(indexArticleId),
+		"comments": commentModal.GetArticleCommentInfos(indexArticleId),
+	}
 }
 
 func (ic IndexController) AdaptRelativeArticlesArray(relativeArticles []model.SimpleArticleInfo) [][]model.SimpleArticleInfo {

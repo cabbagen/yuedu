@@ -44,6 +44,14 @@ func (um UserModel) GetUserInfo(userId int) UserInfo {
 	return userInfo
 }
 
+func (um UserModel) GetUserInfoByName(username string) schema.User {
+	var userInfo schema.User
+
+	um.database.Where("username = ?", username).First(&userInfo)
+
+	return userInfo
+}
+
 // 新建用户
 func (um UserModel) CreateUserInfo(user schema.User) bool {
 	var userInfo schema.User

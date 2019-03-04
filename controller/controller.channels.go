@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"yuedu/model"
+	"github.com/gin-gonic/gin"
 )
 
 type ChannelController struct {
@@ -16,20 +16,23 @@ func (cc ChannelController) RenderChannel(c *gin.Context) {
 
 	channelData := cc.GetChannelData(channelId)
 
+	if userInfo, isExist := cc.GetUserInfo(c); isExist {
+		channelData["userInfo"] = userInfo;
+	}
+
 	c.HTML(200, "wchannels.html", channelData)
 }
 
 func (cc ChannelController) GetChannelData(channelId int) map[string]interface{} {
-	var channelData map[string]interface{} = make(map[string]interface{})
-	var articleModel model.ArticleModel = model.NewArticleModel()
 
-	channelData["channels"] = model.NewChannelModel().GetAllChannels()
-	channelData["articles"] = articleModel.GetArticlesByChannelId(channelId, 0, 10)
-	channelData["topArticles"] = articleModel.GetTopArticles(channelId, 10)
-	channelData["count"] = articleModel.GetArticleCountByChannelId(channelId)
+	articleModel := model.NewArticleModel()
 
-
-	return channelData
+	return map[string]interface{} {
+		"channels": model.NewChannelModel().GetAllChannels(),
+		"articles": articleModel.GetArticlesByChannelId(channelId, 0, 10),
+		"topArticles": articleModel.GetTopArticles(channelId, 10),
+		"count": articleModel.GetArticleCountByChannelId(channelId),
+	}
 }
 
 func (cc ChannelController) GetChannelArticles(c *gin.Context) {
@@ -55,11 +58,11 @@ func (cc ChannelController) GetChannelArticles(c *gin.Context) {
 		return
 	}
 
-	var articleModel model.ArticleModel = model.NewArticleModel()
+	articleModel := model.NewArticleModel()
 
-	var articles []model.SimpleArticleInfo = articleModel.GetArticlesByChannelId(channelId, page, size)
+	articles := articleModel.GetArticlesByChannelId(channelId, page, size)
 
-	var count int = articleModel.GetArticleCountByChannelId(channelId)
+	count := articleModel.GetArticleCountByChannelId(channelId)
 
 	c.JSON(200, map[string]interface{} {"articles": articles, "count": count, "rc": "0"})
 

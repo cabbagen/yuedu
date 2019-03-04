@@ -1,11 +1,11 @@
 package model
 
 import (
+	"log"
 	"strings"
 	"yuedu/schema"
 	"yuedu/database"
 	"github.com/jinzhu/gorm"
-	"log"
 )
 
 type ArticleModel struct {
@@ -70,8 +70,9 @@ type SimpleArticleInfo struct {
 
 // 获取指定文章相关的 n 条文章
 func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) []SimpleArticleInfo {
-	var releasedArticleIds = am.GetReleaseArticleIdsByArticleId(articleId, limit)
 	var releasedArticles []SimpleArticleInfo
+
+	releasedArticleIds := am.GetReleaseArticleIdsByArticleId(articleId, limit)
 
 	rows, error := am.database.Table("yd_articles").
 		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").

@@ -8,9 +8,9 @@
 				<ul class="common-navigation">
 					{{range .channels}}
 						<li>
-							<a href="/channels/{{.ID}}" target="_blank">
-								{{.Name}}
-							</a>
+                            <a href="/channels/{{.ID}}" target="_self">
+                                {{.Name}}
+                            </a>
 						</li>
 					{{end}}
 				</ul>
@@ -20,12 +20,25 @@
 						<i class="icon-search" title="查询搜索"></i>
 					</div>
 					<div class="common-login">
-						<span class="common-login-btn">登录</span>
-						<span class="common-register-btn">注册</span>
+                        {{if .userInfo}}
+                            <span>{{.userInfo.UserName}}</span>
+                        {{else}}
+                            <span class="common-login-btn">登录</span>
+                            <span class="common-register-btn">注册</span>
+                        {{end}}
 					</div>
 				</section>
 		</section>
 	</header>
+    <script type="text/javascript">
+        // 当前频道选定
+        var pathname = window.location.pathname;
+        var matched = /^\/channels\/(\d)+/.test(pathname) && pathname.match(/^\/channels\/(\d)+/);
+
+        if (matched) {
+            $('a', '.common-navigation').eq(matched[1] - 1).addClass('hover');
+        }
+    </script>
 
 	{{/* 登录模态框 */}}
 	<section class="common-login-panel-wrap common-modal-panel-wrap">
@@ -104,12 +117,21 @@
             var captchaId = $('img', '.common-login-panel-content-captcha').attr('data-captcha');
             var captchaDigits = $('input[name="captcha"]', '.common-login-panel-wrap').val().trim();
 
-            // if (!username || !password || !captchaId || !captchaDigits) {
-             //    alert("请将信息填充完整")
-			// }
+            if (!username || !password || !captchaId || !captchaDigits) {
+                alert("请将信息填充完整")
+            }
 
 			$.post('/login', { username: username, password: password, captchaId: captchaId, captchaDigits: captchaDigits}).then(function (result) {
-				console.log(result);
+				if (result.rc === "0") {
+				    // 关闭模态框
+                    $('.common-login-panel-close').click();
+
+                    // 记录 token
+                    window.sessionStorage.setItem("token", result.data);
+					window.setTimeout(function () {
+						window.location.reload();
+                    }, 1000);
+                }
             })
         });
 	</script>

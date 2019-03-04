@@ -10,6 +10,7 @@ import (
 	"yuedu/model"
 	"time"
 	"yuedu/middleware"
+	"encoding/json"
 )
 
 type LoginController struct {
@@ -51,17 +52,30 @@ func (lc LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	if isExist := model.NewUserModel().ValidateUserInfo(username, password); !isExist {
+	userModel := model.NewUserModel()
+
+	if isExist := userModel.ValidateUserInfo(username, password); !isExist {
 		c.JSON(200, map[string]string {"rc": "3", "msg": "用户名密码错误"})
 		return
 	}
 
-	token, error := middleware.NewTokenMiddleware().SignToken(username)
+	userInfo, error := json.Marshal(userModel.GetUserInfoByName(username))
 
 	if error != nil {
 		c.JSON(200, map[string]string {"rc": "4", "msg": "token 生成错误: " + error.Error()})
 		return
 	}
+
+	token, error := middleware.NewTokenMiddleware().SignToken(string(userInfo))
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "4", "msg": "token 生成错误: " + error.Error()})
+		return
+	}
+
+	userInfoString, maxAge := utils.AESECBEncode(utils.AESKEY, string(userInfo)), int((time.Hour * 24).Seconds())
+
+	c.SetCookie("userInfo", userInfoString, maxAge, "/", "localhost", false, true)
 
 	c.JSON(200, map[string]string {"rc": "0", "data": token})
 }
@@ -123,7 +137,7 @@ func (lc LoginController) HandleRegister(c *gin.Context) {
 		return
 	}
 
-	var user schema.User = schema.User {
+	user := schema.User {
 		UserName: username,
 		PassWord: utils.MakeMD5(password),
 		Email: email,

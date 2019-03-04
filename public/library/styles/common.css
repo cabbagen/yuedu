@@ -40,6 +40,14 @@ html, body {
 	color: #777777;
 	text-decoration: none;
 }
+.common-navigation .hover {
+	width: 35px;
+	color: #777777;
+	line-height: 220%;
+	text-decoration: none;
+	display: inline-block;
+	border-bottom: 2px solid #ee5044;
+}
 .common-operation {
 	float: right;
 }
