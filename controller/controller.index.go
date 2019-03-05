@@ -52,6 +52,7 @@ func (ic IndexController) AdaptRelativeArticlesArray(relativeArticles []model.Si
 }
 
 func (ic IndexController) HandleComment(c *gin.Context) {
+
 	articleIdString, hasArticleIdString := c.GetQuery("articleId")
 
 	if !hasArticleIdString {
