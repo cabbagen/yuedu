@@ -17,6 +17,7 @@ func init() {
 	routers = append(routers, indexRouter...)
 	routers = append(routers, loginRouter...)
 	routers = append(routers, channelRouter...)
+	routers = append(routers, userRouter...)
 }
 
 func SetUpRouter(engine *gin.Engine) {

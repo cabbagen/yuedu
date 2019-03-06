@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    {{template "head"}}
+        <link href="/static/user/user.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <section class="user-content">
+            <section class="user-header-background">
+                <img src="{{.Backdrop}}" />
+            </section>
+            <section class="user-info">
+                <section class="user-avatar">
+                    <img src="{{.Avatar}}" />
+                </section>
+                <section class="user-introduce">
+                    <p><strong>{{.Username}}</strong></p>
+                    <p>{{.CreatedAt}}加入</p>
+                </section>
+                <section class="user-relations">
+                    <div class="user-relations-left">
+                        <span>关注 ({{.Followings}})</span>
+                        <em>|</em>
+                        <span>粉丝 ({{.Followers}})</span>
+                    </div>
+                </section>
+            </section>
+        </section>
+        {{template "footer"}}
+    </body>
+</html>

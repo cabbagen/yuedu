@@ -29,3 +29,6 @@ func (cl Controller) GetUserInfo(c *gin.Context) (schema.User, bool) {
 	return userInfo, true
 }
 
+func (cl Controller) HanleThrowException(c *gin.Context, err error) {
+	c.JSON(200, map[string]string {"rc": "1", "msg": err.Error()})
+}

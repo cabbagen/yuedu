@@ -138,8 +138,8 @@ func (lc LoginController) HandleRegister(c *gin.Context) {
 	}
 
 	user := schema.User {
-		UserName: username,
-		PassWord: utils.MakeMD5(password),
+		Username: username,
+		Password: utils.MakeMD5(password),
 		Email: email,
 	}
 

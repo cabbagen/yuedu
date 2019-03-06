@@ -1,0 +1,43 @@
+.user-content, .user-header-background {
+    width: 100%;
+}
+.user-header-background img {
+    width: 100%;
+}
+.user-avatar {
+    text-align: center;
+    margin-top: -75px;
+}
+.user-avatar img {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+}
+.user-introduce p {
+    line-height: 180%;
+    text-align: center;
+}
+.user-introduce p:nth-child(1) {
+    font-size: 20px;
+    color: #333333;
+}
+.user-relations {
+    display: flex;
+    margin-top: 30px;
+    justify-content: center;
+}
+.user-relations-left {
+    background-color: #ffffff;
+    padding: 10px 15px;
+}
+.user-relations-left em {
+    font-style: normal;
+    margin: 0 3px;
+    color: #cccccc;
+}
+.user-relations-left span:hover {
+    color: #ee5044;
+    cursor: pointer;
+}

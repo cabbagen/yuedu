@@ -30,6 +30,16 @@ func (rm RelationModel) GetUserFollowers(userId int) []schema.User {
 	return followers
 }
 
+// 查询粉丝的数量
+func (rm RelationModel) GetUserFollowerCount(userId int) int {
+	var count int
+	var condition string = "( (user_id = ? or relation_user_id = ?) and relation_type = 2 ) or ( relation_user_id = ? and relation_type = 1 )"
+
+	rm.database.Table("yd_relations").Where(condition, userId, userId, userId).Count(&count)
+
+	return count
+}
+
 // 查询用户正在关注的人员的列表
 func (rm RelationModel) GetUserFollowings(userId int) []schema.User {
 	var followings []schema.User
@@ -44,6 +54,16 @@ func (rm RelationModel) GetUserFollowings(userId int) []schema.User {
 		Find(&followings)
 
 	return followings
+}
+
+func (rm RelationModel) GetUserFollowingCount(userId int) int {
+	var count int
+
+	var condition string = "( (user_id = ? or relation_user_id = ?) and relation_type = 2 ) or ( user_id = ? and relation_type = 1 )"
+
+	rm.database.Table("yd_relations").Where(condition, userId, userId, userId).Count(&count)
+
+	return count
 }
 
 // 添加关注

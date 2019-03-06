@@ -28,8 +28,10 @@ type UserInfo struct {
 	Avatar            string     `json:"avatar"`
 	Backdrop          string     `json:"backdrop"`
 	Extra             string     `json:"extra"`
-	Articles          int        `json:"articles"`    // 作品数
-	Flowers           int        `json:"flowers"`     // 粉丝数
+	CreatedAt         string     `json:"createdAt"`
+	Articles          int        `json:"articles"`      // 作品数
+	Followers         int        `json:"followers"`     // 粉丝数
+	Followings        int        `json:"followings"`    // 关注人员列表
 }
 
 func (um UserModel) GetUserInfo(userId int) UserInfo {
@@ -39,7 +41,9 @@ func (um UserModel) GetUserInfo(userId int) UserInfo {
 
 	um.database.Table("yd_articles").Where("anchor = ?", userId).Count(&userInfo.Articles)
 
-	um.database.Table("yd_relations").Where("relation_user_id = ? and relation_type != 1", userId).Count(&userInfo.Flowers)
+	relationModel := NewRelationModel()
+
+	userInfo.Followers, userInfo.Followings = relationModel.GetUserFollowerCount(userId), relationModel.GetUserFollowingCount(userId)
 
 	return userInfo
 }
@@ -56,7 +60,7 @@ func (um UserModel) GetUserInfoByName(username string) schema.User {
 func (um UserModel) CreateUserInfo(user schema.User) bool {
 	var userInfo schema.User
 
-	um.database.Table("yd_users").Where("username = ?", user.UserName).First(&userInfo)
+	um.database.Table("yd_users").Where("username = ?", user.Username).First(&userInfo)
 
 	if userInfo.ID > 0 {
 		return false
