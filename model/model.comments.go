@@ -3,7 +3,6 @@ package model
 import (
 	"yuedu/database"
 	"github.com/jinzhu/gorm"
-	"log"
 )
 
 type CommentlModel struct {
@@ -25,30 +24,30 @@ type CommentInfo struct {
 	CommentTime         string    `json:"commentTime"`
 }
 
-func(cm CommentlModel) GetArticleCommentInfos(articleId int) []CommentInfo {
+func(cm CommentlModel) GetArticleCommentInfos(articleId int) ([]CommentInfo, error) {
 
-	var commentInfos []CommentInfo
+	var comments []CommentInfo
 
-	rows, rowsErr := cm.database.Table("yd_comments").
+	rows, error := cm.database.Table("yd_comments").
 		Select("yd_comments.id, yd_comments.path, yd_comments.content_text, yd_comments.created_at, yd_users.id, yd_users.username, yd_users.avatar").
 		Joins("inner join yd_users on yd_users.id = yd_comments.user_id").
 		Where("yd_comments.article_id = ?", articleId).
 		Rows()
 
-	if rowsErr != nil {
-		log.Fatalln(rowsErr)
+	if error != nil {
+		return comments, error
 	}
 
 	for rows.Next() {
-		var commentInfo CommentInfo = CommentInfo{}
+		var comment CommentInfo = CommentInfo{}
 
-		if err := rows.Scan(&commentInfo.Id, &commentInfo.CommentPath, &commentInfo.CommentContent, &commentInfo.CommentTime, &commentInfo.UserId, &commentInfo.Username, &commentInfo.UserAvatar); err != nil {
-			log.Fatalln(err)
+		if error := rows.Scan(&comment.Id, &comment.CommentPath, &comment.CommentContent, &comment.CommentTime, &comment.UserId, &comment.Username, &comment.UserAvatar); error != nil {
+			return comments, error
 		}
 
-		commentInfos = append(commentInfos, commentInfo)
+		comments = append(comments, comment)
 	}
 
-	return commentInfos
+	return comments, nil
 }
 

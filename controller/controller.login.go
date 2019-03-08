@@ -54,26 +54,40 @@ func (lc LoginController) Login(c *gin.Context) {
 
 	userModel := model.NewUserModel()
 
-	if isExist := userModel.ValidateUserInfo(username, password); !isExist {
+	isExist, error := userModel.ValidateUserInfo(username, password)
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "5", "msg": "数据库操作失败: " + error.Error()})
+		return
+	}
+
+	if !isExist {
 		c.JSON(200, map[string]string {"rc": "3", "msg": "用户名密码错误"})
 		return
 	}
 
-	userInfo, error := json.Marshal(userModel.GetUserInfoByName(username))
+	userInfo, error := userModel.GetUserInfoByName(username)
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "5", "msg": "数据库操作失败: " + error.Error()})
+		return
+	}
+
+	userInfoJson, error := json.Marshal(userInfo)
 
 	if error != nil {
 		c.JSON(200, map[string]string {"rc": "4", "msg": "token 生成错误: " + error.Error()})
 		return
 	}
 
-	token, error := middleware.NewTokenMiddleware().SignToken(string(userInfo))
+	token, error := middleware.NewTokenMiddleware().SignToken(string(userInfoJson))
 
 	if error != nil {
 		c.JSON(200, map[string]string {"rc": "4", "msg": "token 生成错误: " + error.Error()})
 		return
 	}
 
-	userInfoString, maxAge := utils.AESECBEncode(utils.AESKEY, string(userInfo)), int((time.Hour * 24).Seconds())
+	userInfoString, maxAge := utils.AESECBEncode(utils.AESKEY, string(userInfoJson)), int((time.Hour * 24).Seconds())
 
 	c.SetCookie("userInfo", userInfoString, maxAge, "/", "localhost", false, true)
 
@@ -146,9 +160,9 @@ func (lc LoginController) HandleRegister(c *gin.Context) {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	var isSuccess bool = model.NewUserModel().CreateUserInfo(user)
+	error := model.NewUserModel().CreateUserInfo(user)
 
-	if !isSuccess {
+	if error != nil {
 		c.JSON(200, map[string]string {"rc": "1", "msg": "当前用户已存在"})
 		return
 	}

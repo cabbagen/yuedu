@@ -11,7 +11,11 @@ type IndexController struct {
 }
 
 func (ic IndexController) HandleIndex(c *gin.Context) {
-	indexData := ic.getIndexData()
+	indexData, error := ic.getIndexData()
+
+	if error != nil {
+		ic.HandleThrowException(c, error)
+	}
 
 	if userInfo, isExist := ic.GetUserInfo(c); isExist {
 		indexData["userInfo"] = userInfo
@@ -20,21 +24,47 @@ func (ic IndexController) HandleIndex(c *gin.Context) {
 	c.HTML(200, "windex.html", indexData)
 }
 
-func (ic IndexController) getIndexData() map[string]interface{} {
+func (ic IndexController) getIndexData() (map[string]interface{}, error) {
+
+	var indexData map[string]interface{} = make(map[string]interface{})
 
 	indexArticleId := 354
 
 	channelModel, articleModel, commentModal := model.NewChannelModel(), model.NewArticleModel(), model.NewCommentlModel()
 
-	relativeArticles := articleModel.GetReleasedArticlesByArticleId(indexArticleId, 20)
+	relativeArticles, error := articleModel.GetReleasedArticlesByArticleId(indexArticleId, 20)
 
-	return map[string]interface{} {
-		"channels": channelModel.GetAllChannels(),
-		"article": articleModel.GetArticleInfoById(indexArticleId),
-		"relativeArticlesArray": ic.AdaptRelativeArticlesArray(relativeArticles),
-		"relativeArticlesByOtherChannel": articleModel.GetOtherChannelLastArticlesByArticleId(indexArticleId),
-		"comments": commentModal.GetArticleCommentInfos(indexArticleId),
+	if error != nil {
+		return indexData, error
 	}
+
+	if channels, error := channelModel.GetAllChannels(); error != nil {
+		return indexData, error
+	} else {
+		indexData["channels"] = channels
+	}
+
+	if article, error := articleModel.GetArticleInfoById(indexArticleId); error != nil {
+		return indexData, error
+	} else {
+		indexData["article"] = article
+	}
+
+	if relativeArticlesByOtherChannel, error := articleModel.GetOtherChannelLastArticlesByArticleId(indexArticleId); error != nil {
+		return indexData, error
+	} else {
+		indexData["relativeArticlesByOtherChannel"] = relativeArticlesByOtherChannel
+	}
+
+	if comments, error := commentModal.GetArticleCommentInfos(indexArticleId); error != nil {
+		return indexData, error
+	} else {
+		indexData["comments"] = comments
+	}
+
+	indexData["relativeArticlesArray"] = ic.AdaptRelativeArticlesArray(relativeArticles)
+
+	return indexData, nil
 }
 
 func (ic IndexController) AdaptRelativeArticlesArray(relativeArticles []model.SimpleArticleInfo) [][]model.SimpleArticleInfo {
@@ -53,21 +83,26 @@ func (ic IndexController) AdaptRelativeArticlesArray(relativeArticles []model.Si
 
 func (ic IndexController) HandleComment(c *gin.Context) {
 
-	articleIdString, hasArticleIdString := c.GetQuery("articleId")
+	articleIdString, isExist := c.GetQuery("articleId")
 
-	if !hasArticleIdString {
+	if !isExist {
 		c.JSON(200, map[string]string{"rc": "1", "msg": "articleId 不能为空"})
 		return
 	}
 
-	articleId, articleIdErr := strconv.Atoi(articleIdString)
+	articleId, error := strconv.Atoi(articleIdString)
 
-	if articleIdErr != nil {
+	if error != nil {
 		c.JSON(200, map[string]string{"rc": "1", "msg": "articleId 转换失败"})
 		return
 	}
 
-	var comments []model.CommentInfo = model.NewCommentlModel().GetArticleCommentInfos(int(articleId))
+	comments, error := model.NewCommentlModel().GetArticleCommentInfos(int(articleId))
+
+	if error != nil {
+		c.JSON(200, map[string]string{"rc": "2", "msg": "数据库操作失败"})
+		return
+	}
 
 	c.JSON(200, map[string]interface{}{"rc": "0", "data": comments})
 }

@@ -12,9 +12,17 @@ type ChannelController struct {
 
 func (cc ChannelController) RenderChannel(c *gin.Context) {
 
-	channelId, _ := strconv.Atoi(c.Param("channelId"))
+	channelId, error := strconv.Atoi(c.Param("channelId"))
 
-	channelData := cc.GetChannelData(channelId)
+	if error != nil {
+		cc.HandleThrowException(c, error)
+	}
+
+	channelData, error := cc.GetChannelData(channelId)
+
+	if error != nil {
+		cc.HandleThrowException(c, error)
+	}
 
 	if userInfo, isExist := cc.GetUserInfo(c); isExist {
 		channelData["userInfo"] = userInfo;
@@ -23,16 +31,36 @@ func (cc ChannelController) RenderChannel(c *gin.Context) {
 	c.HTML(200, "wchannels.html", channelData)
 }
 
-func (cc ChannelController) GetChannelData(channelId int) map[string]interface{} {
+func (cc ChannelController) GetChannelData(channelId int) (map[string]interface{}, error) {
+	var channelData map[string]interface{} = make(map[string]interface{})
 
 	articleModel := model.NewArticleModel()
 
-	return map[string]interface{} {
-		"channels": model.NewChannelModel().GetAllChannels(),
-		"articles": articleModel.GetArticlesByChannelId(channelId, 0, 10),
-		"topArticles": articleModel.GetTopArticles(channelId, 10),
-		"count": articleModel.GetArticleCountByChannelId(channelId),
+	if channels, error := model.NewChannelModel().GetAllChannels(); error != nil {
+		return channelData, error
+	} else {
+		channelData["channels"] = channels
 	}
+
+	if articles, error := articleModel.GetArticlesByChannelId(channelId, 0, 10); error != nil {
+		return channelData, error
+	} else {
+		channelData["articles"] = articles
+	}
+
+	if topArticles, error := articleModel.GetTopArticles(channelId, 10); error != nil {
+		return channelData, error
+	} else {
+		channelData["topArticles"] = topArticles
+	}
+
+	if count, error := articleModel.GetArticleCountByChannelId(channelId); error != nil {
+		return channelData, error
+	} else {
+		channelData["count"] = count
+	}
+
+	return channelData, nil
 }
 
 func (cc ChannelController) GetChannelArticles(c *gin.Context) {
@@ -60,10 +88,19 @@ func (cc ChannelController) GetChannelArticles(c *gin.Context) {
 
 	articleModel := model.NewArticleModel()
 
-	articles := articleModel.GetArticlesByChannelId(channelId, page, size)
+	articles, error := articleModel.GetArticlesByChannelId(channelId, page, size)
 
-	count := articleModel.GetArticleCountByChannelId(channelId)
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "2", "msg": "数据库操作失败"})
+		return
+	}
+
+	count, error := articleModel.GetArticleCountByChannelId(channelId)
+
+	if error != nil {
+		c.JSON(200, map[string]string {"rc": "2", "msg": "数据库操作失败"})
+		return
+	}
 
 	c.JSON(200, map[string]interface{} {"articles": articles, "count": count, "rc": "0"})
-
 }

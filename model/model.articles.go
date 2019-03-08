@@ -1,7 +1,6 @@
 package model
 
 import (
-	"log"
 	"strings"
 	"yuedu/schema"
 	"yuedu/database"
@@ -15,6 +14,29 @@ type ArticleModel struct {
 func NewArticleModel() ArticleModel {
 	return ArticleModel { database.GetDataBase() }
 }
+
+// 文章收藏实体
+type SmallArticleInfo struct {
+	Id                       int             `json:"id"`
+	Title                    string          `json:"title"`
+	Author                   string          `json:"author"`
+	AnchorName               string          `json:"anchorName"`
+	CoverImg                 string          `json:"coverImg"`
+}
+
+// 文章列表实体
+type SimpleArticleInfo struct {
+	Id                       int             `json:"id"`
+	Title                    string          `json:"title"`
+	Author                   string          `json:"author"`
+	AnchorName               string          `json:"anchorName"`
+	During                   int             `json:"during"`
+	PlayNumber               int             `json:"playNumber"`
+	CoverImg                 string          `json:"coverImg"`
+	Audio                    string          `json:"audio"`
+	ContentText              string          `json:"contentText"`
+}
+
 
 // 文章详情实体
 type ArticleInfo struct {
@@ -33,46 +55,52 @@ type ArticleInfo struct {
 	Collections              int             `json:"collections"`
 }
 
+
+
 // 通过文章 Id 获取文章详细信息
-func (am ArticleModel) GetArticleInfoById(articleId int) ArticleInfo {
+func (am ArticleModel) GetArticleInfoById(articleId int) (ArticleInfo, error) {
 	var article schema.Article
 
 	var articleInfo ArticleInfo
 
-	am.database.Where("id = ?", articleId).First(&article).Scan(&articleInfo)
+	if result := am.database.Where("id = ?", articleId).First(&article).Scan(&articleInfo); result.Error != nil {
+		return articleInfo, result.Error
+	}
 
-	am.database.Table("yd_channels").Where("id = ?", article.ChannelId).Scan(&articleInfo.ChannelInfo)
+	if result := am.database.Table("yd_channels").Where("id = ?", article.ChannelId).Scan(&articleInfo.ChannelInfo); result.Error != nil {
+		return articleInfo, result.Error
+	}
 
-	am.database.Table("yd_tags").Where("state = 1 and id in (?)", strings.Split(article.TagIds, ",")).Find(&articleInfo.Tags)
+	if result := am.database.Table("yd_tags").Where("state = 1 and id in (?)", strings.Split(article.TagIds, ",")).Find(&articleInfo.Tags); result.Error != nil {
+		return articleInfo, result.Error
+	}
 
-	am.database.Table("yd_supports").Where("article_id = ? and state = 1 and type = 1", articleId).Count(&articleInfo.Supports)
+	if result := am.database.Table("yd_supports").Where("article_id = ? and state = 1 and type = 1", articleId).Count(&articleInfo.Supports); result.Error != nil {
+		return articleInfo, result.Error
+	}
 
-	am.database.Table("yd_collections").Where("article_id = ? and state = 1", articleId).Count(&articleInfo.Collections)
+	if result := am.database.Table("yd_collections").Where("article_id = ? and state = 1", articleId).Count(&articleInfo.Collections); result.Error != nil {
+		return articleInfo, result.Error
+	}
 
-	articleInfo.AnchorInfo = NewUserModel().GetUserInfo(article.Anchor)
+	if archorInfo, error := NewUserModel().GetUserInfo(article.Anchor); error != nil {
+		return articleInfo, error
+	} else {
+		articleInfo.AnchorInfo = archorInfo
+	}
 
-	return articleInfo
-}
-
-
-// 文章列表实体
-type SimpleArticleInfo struct {
-	Id                       int             `json:"id"`
-	Title                    string          `json:"title"`
-	Author                   string          `json:"author"`
-	AnchorName               string          `json:"anchorName"`
-	During                   int             `json:"during"`
-	PlayNumber               int             `json:"playNumber"`
-	CoverImg                 string          `json:"coverImg"`
-	Audio                    string          `json:"audio"`
-	ContentText              string          `json:"contentText"`
+	return articleInfo, nil
 }
 
 // 获取指定文章相关的 n 条文章
-func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) []SimpleArticleInfo {
+func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) ([]SimpleArticleInfo, error) {
 	var releasedArticles []SimpleArticleInfo
 
-	releasedArticleIds := am.GetReleaseArticleIdsByArticleId(articleId, limit)
+	releasedArticleIds, error := am.GetReleaseArticleIdsByArticleId(articleId, limit)
+
+	if error != nil {
+		return releasedArticles, error
+	}
 
 	rows, error := am.database.Table("yd_articles").
 		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
@@ -81,44 +109,49 @@ func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) 
 		Rows()
 
 	if error != nil {
-		log.Println(error)
+		return releasedArticles, error
 	}
 
 	for rows.Next() {
 		var article SimpleArticleInfo = SimpleArticleInfo{}
 
 		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
-			log.Println(error)
+			return releasedArticles, error
 		}
 
 		releasedArticles = append(releasedArticles, article)
 	}
 
-	return releasedArticles
+	return releasedArticles, nil
 }
 
-func (am ArticleModel) GetReleaseArticleIdsByArticleId(articleId int, limit int) []int {
+func (am ArticleModel) GetReleaseArticleIdsByArticleId(articleId int, limit int) ([]int, error) {
 	var articleTagIds []string
 
-	am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("tag_ids", &articleTagIds)
+	if result := am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("tag_ids", &articleTagIds); result.Error != nil {
+		return []int{}, result.Error
+	}
 
 	var mainTagId string = strings.Split(articleTagIds[0], ",")[0]
 
 	var articleIds []int
 
-	am.database.Table("yd_articles").Where("tag_ids LIKE ?", "%" + mainTagId + "%").Limit(limit).Pluck("id", &articleIds)
+	if result := am.database.Table("yd_articles").Where("tag_ids LIKE ?", "%" + mainTagId + "%").Limit(limit).Pluck("id", &articleIds); result.Error != nil {
+		return articleIds, result.Error
+	}
 
-	return articleIds
+	return articleIds, nil
 }
 
-
 // 获取指定文章其他类型的最新文章列表
-func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []SimpleArticleInfo {
+func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) ([]SimpleArticleInfo, error) {
 	var channelId []int
 	var otherArticles []SimpleArticleInfo
 	var query string = "yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text, max(yd_articles.id)"
 
-	am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("channel_id", &channelId)
+	if result := am.database.Table("yd_articles").Where("id = ?", articleId).Pluck("channel_id", &channelId); result.Error != nil {
+		return otherArticles, result.Error
+	}
 
 	rows, error := am.database.Table("yd_articles").Select(query).Where("yd_articles.channel_id != ?", channelId[0]).
 		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
@@ -126,7 +159,7 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 		Rows()
 
 	if error != nil {
-		log.Println(error)
+		return otherArticles, error
 	}
 
 	for rows.Next() {
@@ -134,18 +167,17 @@ func (am ArticleModel) GetOtherChannelLastArticlesByArticleId(articleId int) []S
 		var maxId int
 
 		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText, &maxId); error != nil {
-			log.Println(error)
+			return otherArticles, error
 		}
 
 		otherArticles = append(otherArticles, article)
 	}
 
-	return otherArticles;
+	return otherArticles, nil
 }
 
-
 // 获取指定频道的文章列表
-func (am ArticleModel) GetArticlesByChannelId(channelId, page, size int) []SimpleArticleInfo {
+func (am ArticleModel) GetArticlesByChannelId(channelId, page, size int) ([]SimpleArticleInfo, error) {
 	var articles []SimpleArticleInfo
 
 	rows, error := am.database.Table("yd_articles").
@@ -157,37 +189,35 @@ func (am ArticleModel) GetArticlesByChannelId(channelId, page, size int) []Simpl
 		Rows()
 
 	if error != nil {
-		log.Println(error)
-		return articles
+		return articles, error
 	}
 
 	for rows.Next() {
 		var article SimpleArticleInfo = SimpleArticleInfo{}
 
 		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
-			log.Println(error)
-			return articles
+			return articles, error
 		}
 
 		articles = append(articles, article)
 	}
 
-	return articles
+	return articles, nil
 }
-
 
 // 获取指定频道文章的总条数
-func (am ArticleModel) GetArticleCountByChannelId(channelId int) int {
+func (am ArticleModel) GetArticleCountByChannelId(channelId int) (int, error) {
 	var count int = 0
 
-	am.database.Table("yd_articles").Where("channel_id = ?", channelId).Count(&count)
+	if result := am.database.Table("yd_articles").Where("channel_id = ?", channelId).Count(&count); result.Error != nil {
+		return count, result.Error
+	}
 
-	return count
+	return count, nil
 }
 
-
 // 根据点赞数目查询指定类目最受欢迎的文章
-func (am ArticleModel) GetTopArticles(channelId, numbers int) []SimpleArticleInfo {
+func (am ArticleModel) GetTopArticles(channelId, numbers int) ([]SimpleArticleInfo, error) {
 	var articles []SimpleArticleInfo
 
 	rows, error := am.database.Table("yd_supports").
@@ -200,8 +230,7 @@ func (am ArticleModel) GetTopArticles(channelId, numbers int) []SimpleArticleInf
 		Rows()
 
 	if error != nil {
-		log.Println(error)
-		return articles
+		return articles, error
 	}
 
 	for rows.Next() {
@@ -209,22 +238,26 @@ func (am ArticleModel) GetTopArticles(channelId, numbers int) []SimpleArticleInf
 		var count int
 
 		if error := rows.Scan(&count, &article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
-			log.Println(error)
-			return articles
+			return articles, error
 		}
 
 		articles = append(articles, article)
 	}
 
+	// 如果小于指定的条数，取最新的文章补充上去
 	if len(articles) < numbers {
-		articles = append(articles, am.GetLastNewArticles(channelId, numbers - len(articles))...)
+		if lastNewArticles, error := am.GetLastNewArticles(channelId, numbers - len(articles)); error != nil {
+			return articles, error
+		} else {
+			articles = append(articles, lastNewArticles...)
+		}
 	}
 
-	return articles
+	return articles, nil
 }
 
 // 获取指定类目最新的文章
-func (am ArticleModel) GetLastNewArticles(channelId, numbers int) []SimpleArticleInfo {
+func (am ArticleModel) GetLastNewArticles(channelId, numbers int) ([]SimpleArticleInfo, error) {
 	var articles []SimpleArticleInfo
 
 	rows, error := am.database.Table("yd_articles").
@@ -236,20 +269,18 @@ func (am ArticleModel) GetLastNewArticles(channelId, numbers int) []SimpleArticl
 		Rows()
 
 	if error != nil {
-		log.Println(error)
-		return  articles
+		return articles, error
 	}
 
 	for rows.Next() {
 		var article SimpleArticleInfo = SimpleArticleInfo{}
 
 		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
-			log.Println(error)
-			return articles
+			return articles, error
 		}
 
 		articles = append(articles, article)
 	}
 
-	return articles
+	return articles, nil
 }

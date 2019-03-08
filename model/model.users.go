@@ -34,47 +34,60 @@ type UserInfo struct {
 	Followings        int        `json:"followings"`    // 关注人员列表
 }
 
-func (um UserModel) GetUserInfo(userId int) UserInfo {
+func (um UserModel) GetUserInfo(userId int) (UserInfo, error) {
 	var userInfo UserInfo
 
-	um.database.Table("yd_users").Where("id = ?", userId).Scan(&userInfo)
+	if result := um.database.Table("yd_users").Where("id = ?", userId).Scan(&userInfo); result.Error != nil {
+		return userInfo, result.Error
+	}
 
-	um.database.Table("yd_articles").Where("anchor = ?", userId).Count(&userInfo.Articles)
+	if result := um.database.Table("yd_articles").Where("anchor = ?", userId).Count(&userInfo.Articles); result.Error != nil {
+		return userInfo, result.Error
+	}
 
-	relationModel := NewRelationModel()
+	if followers, error := NewRelationModel().GetUserFollowerCount(userId); error != nil {
+		return userInfo, error
+	} else {
+		userInfo.Followers = followers
+	}
 
-	userInfo.Followers, userInfo.Followings = relationModel.GetUserFollowerCount(userId), relationModel.GetUserFollowingCount(userId)
+	if followings, error := NewRelationModel().GetUserFollowingCount(userId); error != nil {
+		return userInfo, error
+	} else {
+		userInfo.Followings = followings
+	}
 
-	return userInfo
+	return userInfo, nil
 }
 
-func (um UserModel) GetUserInfoByName(username string) schema.User {
+func (um UserModel) GetUserInfoByName(username string) (schema.User, error) {
 	var userInfo schema.User
 
-	um.database.Where("username = ?", username).First(&userInfo)
+	if result := um.database.Where("username = ?", username).First(&userInfo); result.Error != nil {
+		return userInfo, result.Error
+	}
 
-	return userInfo
+	return userInfo, nil
 }
 
 // 新建用户
-func (um UserModel) CreateUserInfo(user schema.User) bool {
-	var userInfo schema.User
-
-	um.database.Table("yd_users").Where("username = ?", user.Username).First(&userInfo)
-
-	if userInfo.ID > 0 {
-		return false
+func (um UserModel) CreateUserInfo(user schema.User) error {
+	if result := um.database.Create(&user); result.Error != nil {
+		return result.Error
 	}
-
-	um.database.Create(&user)
-
-	return true
+	return nil
 }
 
-func (um UserModel) ValidateUserInfo(username, password string) bool {
+func (um UserModel) ValidateUserInfo(username, password string) (bool, error) {
 	var userInfo schema.User
 
-	um.database.Table("yd_users").Where("username = ? and password = ?", username, utils.MakeMD5(password)).First(&userInfo)
+	result := um.database.Table("yd_users").
+		Where("username = ? and password = ?", username, utils.MakeMD5(password)).
+		First(&userInfo)
 
-	return userInfo.ID > 0
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return userInfo.ID > 0, nil
 }
