@@ -13,11 +13,11 @@ var userRouter []descriptor = []descriptor {
 		method: "GET",
 		handlers: []gin.HandlerFunc { userController.RenderUser },
 	},
-	//descriptor{
-	//	path: "/users/:userId",
-	//	method: "GET",
-	//	handlers: []gin.HandlerFunc { userController.GetUserSampleInfo },
-	//},
+	descriptor{
+		path: "/users/:userId",
+		method: "GET",
+		handlers: []gin.HandlerFunc { userController.FetchUserData },
+	},
 	descriptor{
 		path: "/followers",
 		method: "GET",

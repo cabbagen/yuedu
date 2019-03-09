@@ -41,3 +41,83 @@
     color: #ee5044;
     cursor: pointer;
 }
+.user-panels-wrap {
+    width: 1010px;
+    margin: 60px auto 20px auto;
+}
+.user-panels-tab ul {
+    display: flex;
+}
+.user-panels-tab li {
+    height: 40px;
+    line-height: 40px;
+    margin-right: 70px;
+    padding: 0 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.user-panels-tab li:hover {
+    font-weight: bold;
+    border-bottom: 2px solid #ee5044;
+    margin-bottom: -2px;
+}
+.user-panels-tab .active {
+    font-weight: bold;
+    border-bottom: 2px solid #ee5044;
+    margin-bottom: -2px;
+}
+
+.user-panels {
+    margin-top: 30px;
+}
+.user-panel {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -20px;
+    height: 400px;
+    overflow-y: scroll;
+}
+.user-panel a {
+    color: #707070;
+    text-decoration: none;
+}
+.user-panel-article {
+    width: 215px;
+    height: 200px;
+    background: #ffffff;
+    padding: 5px;
+    box-sizing: border-box;
+    margin: 0 20px;
+    border-radius: 3px;
+}
+.user-panel-article div {
+    width: 100%;
+}
+.user-panel-article div:nth-child(2) {
+    height: 55px;
+    line-height: 62px;
+    text-align: center;
+}
+.user-panel-article img {
+    display: block;
+    width: 100%;
+}
+
+.user-panel-following, .user-panel-follower {
+    width: 80px;
+    background: #ffffff;
+    margin: 0 20px;
+    border-radius: 3px;
+}
+.user-panel-following div, .user-panel-follower div {
+    width: 100%;
+}
+.user-panel-following div:nth-child(2), .user-panel-follower div:nth-child(2) {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+}
+.user-panel-following img, .user-panel-follower img {
+    display: block;
+    width: 100%;
+}

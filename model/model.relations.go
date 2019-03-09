@@ -17,21 +17,58 @@ func NewRelationModel() RelationModel {
 
 // 查询用户的关注粉丝列表
 func (rm RelationModel) GetUserFollowers(userId int) ([]schema.User, error) {
-	var followers []schema.User
+	var singleFollowers []schema.User
 
-	var condition string = "( (user_id = ? or relation_user_id = ?) and relation_type = 2 ) or ( relation_user_id = ? and relation_type = 1 )"
-
-	result := rm.database.Table("yd_relations").
+	singleResult := rm.database.Table("yd_relations").
 		Select("yd_users.*").
-		Where(condition, userId, userId, userId).
-		Joins("inner join yd_users on yd_users.id = yd_relations.relation_user_id").
-		Find(&followers)
+		Where("relation_user_id = ? and relation_type = 1", userId).
+		Joins("inner join yd_users on yd_users.id = yd_relations.user_id").
+		Find(&singleFollowers)
 
-	if result.Error != nil {
-		return followers, result.Error
+	if singleResult.Error != nil {
+		return singleFollowers, singleResult.Error
 	}
 
-	return followers, nil
+	commonFollowers, error := rm.GetRelationUsers(userId)
+
+	if error != nil {
+		return commonFollowers, error
+	}
+
+	singleFollowers = append(singleFollowers, commonFollowers...)
+
+	return singleFollowers, nil
+}
+
+func (rm RelationModel) GetRelationUsers(userId int) ([]schema.User, error) {
+	var relations []schema.Relation
+
+	result := rm.database.Table("yd_relations").
+		Select("*").
+		Where("(user_id = ? or relation_user_id = ?) and relation_type = 2", userId, userId).
+		Find(&relations)
+
+	if result.Error != nil {
+		return []schema.User{}, result.Error
+	}
+
+	var relatedUserIds []int
+
+	for _, relation := range relations {
+		if relation.UserId == userId {
+			relatedUserIds = append(relatedUserIds, relation.RelationUserId)
+		} else {
+			relatedUserIds = append(relatedUserIds, relation.UserId)
+		}
+	}
+
+	users, error := NewUserModel().GetUserInfoByUserIds(relatedUserIds)
+
+	if error != nil {
+		return users, error
+	}
+
+	return users, nil
 }
 
 // 查询粉丝的数量
@@ -48,22 +85,28 @@ func (rm RelationModel) GetUserFollowerCount(userId int) (int, error) {
 
 // 查询用户正在关注的人员的列表
 func (rm RelationModel) GetUserFollowings(userId int) ([]schema.User, error) {
-	var followings []schema.User
+	var singleFollowings []schema.User
 
-	var condition string = "( (user_id = ? or relation_user_id = ?) and relation_type = 2 ) or ( user_id = ? and relation_type = 1 )"
-
-	// 互相关注
-	result := rm.database.Table("yd_relations").
+	singleResult := rm.database.Table("yd_relations").
 		Select("yd_users.*").
-		Where(condition, userId, userId, userId).
+		Where("user_id = ? and relation_type = 1", userId).
 		Joins("inner join yd_users on yd_users.id = yd_relations.relation_user_id").
-		Find(&followings)
+		Find(&singleFollowings)
 
-	if result.Error != nil {
-		return followings, result.Error
+	if singleResult.Error != nil {
+		return singleFollowings, singleResult.Error
 	}
 
-	return followings, nil
+
+	commonFollowings, error := rm.GetRelationUsers(userId)
+
+	if error != nil {
+		return commonFollowings, error
+	}
+
+	singleFollowings = append(singleFollowings, commonFollowings...)
+
+	return singleFollowings, nil
 }
 
 func (rm RelationModel) GetUserFollowingCount(userId int) (int, error) {

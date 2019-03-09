@@ -17,7 +17,7 @@ func (cm CollectionModel) GetUserCollectedArticles(userId int) ([]SmallArticleIn
 	var articles []SmallArticleInfo
 
 	rows, error := cm.database.Table("yd_collections").
-		Select("yd_articles.id, title, author, anchor_name, cover_img").
+		Select("yd_articles.id, title, author, anchor, cover_img").
 		Where("yd_collections.user_id = ?", userId).
 		Joins("inner join yd_articles on yd_articles.id = yd_collections.article_id").
 		Rows()
@@ -29,7 +29,7 @@ func (cm CollectionModel) GetUserCollectedArticles(userId int) ([]SmallArticleIn
 	for rows.Next() {
 		article := SmallArticleInfo{}
 
-		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName); error != nil {
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.CoverImg); error != nil {
 			return articles, error
 		}
 

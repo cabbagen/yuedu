@@ -33,7 +33,7 @@ func formatTimeString(s string) interface{} {
 		return ""
 	}
 
-	timesFormat := fmt.Sprintf("%d/%d/%d %d:%d:%d", parsedTime.Year(), parsedTime.Month() + 1, parsedTime.Day(), parsedTime.Hour(), parsedTime.Minute(), parsedTime.Second())
+	timesFormat := fmt.Sprintf("%d-%d-%d %d:%d:%d", parsedTime.Year(), parsedTime.Month() + 1, parsedTime.Day(), parsedTime.Hour(), parsedTime.Minute(), parsedTime.Second())
 
 	return strings.TrimLeft(timesFormat, "0:")
 }

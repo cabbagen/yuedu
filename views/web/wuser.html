@@ -8,25 +8,86 @@
     <body>
         <section class="user-content">
             <section class="user-header-background">
-                <img src="{{.Backdrop}}" />
+                <img src="{{.userInfo.Backdrop}}" />
             </section>
             <section class="user-info">
                 <section class="user-avatar">
-                    <img src="{{.Avatar}}" />
+                    <img src="{{.userInfo.Avatar}}" />
                 </section>
                 <section class="user-introduce">
-                    <p><strong>{{.Username}}</strong></p>
-                    <p>{{.CreatedAt}}加入</p>
+                    <p><strong>{{.userInfo.Username}}</strong></p>
+                    <p>{{.userInfo.CreatedAt | formatTimeString}} 加入</p>
                 </section>
                 <section class="user-relations">
                     <div class="user-relations-left">
-                        <span>关注 ({{.Followings}})</span>
+                        <span>关注 ({{.userInfo.Followings}})</span>
                         <em>|</em>
-                        <span>粉丝 ({{.Followers}})</span>
+                        <span>粉丝 ({{.userInfo.Followers}})</span>
+                    </div>
+                </section>
+            </section>
+            <section class="user-panels-wrap">
+                <section class="user-panels-tab">
+                    <ul>
+                        <li class="active" data-index="0">我的收藏 ({{len .articles}})</li>
+                        <li data-index="1">我关注的人 ({{len .followings}})</li>
+                        <li data-index="2">我的粉丝 ({{len .followers}})</li>
+                    </ul>
+                </section>
+                <section class="user-panels">
+                    <div class="user-panel">
+                        {{range $article := .articles}}
+                            <div class="user-panel-article">
+                                <div>
+                                    <img src="{{$article.CoverImg}}" />
+                                </div>
+                                <div>
+                                    <p>{{$article.Title}}</p>
+                                </div>
+                            </div>
+                        {{end}}
+                    </div>
+                    <div class="user-panel" style="display: none">
+                        {{range $following := .followings}}
+                            <a href="/user/{{$following.ID}}">
+                                <div class="user-panel-following">
+                                    <div>
+                                        <img src="{{$following.Avatar}}" />
+                                    </div>
+                                    <div>
+                                        <p>{{$following.Username}}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        {{end}}
+                    </div>
+                    <div class="user-panel" style="display: none">
+                    {{range $follower := .followers}}
+                        <a href="/user/{{$follower.ID}}">
+                            <div class="user-panel-follower">
+                                <div>
+                                    <img src="{{$follower.Avatar}}" />
+                                </div>
+                                <div>
+                                    <p>{{$follower.Username}}</p>
+                                </div>
+                            </div>
+                        </a>
+                    {{end}}
                     </div>
                 </section>
             </section>
         </section>
         {{template "footer"}}
     </body>
+    <script type="text/javascript">
+        $('li', '.user-panels-tab').on('click', function () {
+           $('li', '.user-panels-tab').removeClass('active');
+           $('.user-panel').hide();
+
+
+           $(this).addClass('active');
+           $('.user-panel').eq($(this).attr('data-index')).show();
+        });
+    </script>
 </html>

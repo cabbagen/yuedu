@@ -70,6 +70,16 @@ func (um UserModel) GetUserInfoByName(username string) (schema.User, error) {
 	return userInfo, nil
 }
 
+func (um UserModel) GetUserInfoByUserIds(userIds []int) ([]schema.User, error) {
+	var users []schema.User
+
+	if result := um.database.Table("yd_users").Where("id in (?)", userIds).Find(&users); result.Error != nil {
+		return users, nil
+	}
+
+	return users, nil
+}
+
 // 新建用户
 func (um UserModel) CreateUserInfo(user schema.User) error {
 	if result := um.database.Create(&user); result.Error != nil {
