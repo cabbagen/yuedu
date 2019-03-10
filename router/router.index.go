@@ -21,11 +21,6 @@ var indexRouter []descriptor = []descriptor {
 		handlers: []gin.HandlerFunc { indexController.RenderArticle },
 	},
 	descriptor{
-		path: "/comments",
-		method: "GET",
-		handlers: []gin.HandlerFunc { indexController.HandleComment },
-	},
-	descriptor{
 		path: "/article/support",
 		method: "POST",
 		handlers: []gin.HandlerFunc { tokenMiddleware.Handle, indexController.SupportArticle },
@@ -39,5 +34,25 @@ var indexRouter []descriptor = []descriptor {
 		path: "/following/anchor",
 		method: "POST",
 		handlers: []gin.HandlerFunc { tokenMiddleware.Handle, indexController.HandleFollowingAnchor },
+	},
+	descriptor{
+		path: "/article/comment",
+		method: "POST",
+		handlers: []gin.HandlerFunc { tokenMiddleware.Handle, indexController.HandleArticleComment },
+	},
+	descriptor{
+		path: "/comment/comment",
+		method: "POST",
+		handlers: []gin.HandlerFunc { tokenMiddleware.Handle, indexController.HandleCommentComment },
+	},
+	descriptor{
+		path: "/comment/delete",
+		method: "POST",
+		handlers: []gin.HandlerFunc { tokenMiddleware.Handle, indexController.HandleDeleteComment },
+	},
+	descriptor{
+		path: "/comment/support",
+		method: "POST",
+		handlers: []gin.HandlerFunc { tokenMiddleware.Handle, indexController.HandleCommentSupport },
 	},
 }

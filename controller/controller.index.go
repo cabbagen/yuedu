@@ -21,9 +21,17 @@ func (ic IndexController) RenderIndex(c *gin.Context) {
 	if userInfo, isExist := ic.GetUserInfo(c); isExist {
 		indexData["userInfo"] = userInfo
 
+		// 用户收藏点赞信息
 		if extraInfo, error := ic.GetUserExtraInfo(userInfo.ID, 354); error == nil {
 			indexData["extraInfo"] = extraInfo
 		}
+
+		// 用户评论信息
+		if comments, error := ic.GetArticleComments(userInfo.ID, 354); error == nil {
+			indexData["comments"] = comments
+		}
+	} else {
+		indexData["comments"] = []interface{}{}
 	}
 
 	c.HTML(200, "windex.html", indexData)
@@ -33,7 +41,7 @@ func (ic IndexController) GetIndexData(articleId int) (map[string]interface{}, e
 
 	var indexData map[string]interface{} = make(map[string]interface{})
 
-	channelModel, articleModel, commentModal := model.NewChannelModel(), model.NewArticleModel(), model.NewCommentlModel()
+	channelModel, articleModel := model.NewChannelModel(), model.NewArticleModel()
 
 	relativeArticles, error := articleModel.GetReleasedArticlesByArticleId(articleId, 20)
 
@@ -57,12 +65,6 @@ func (ic IndexController) GetIndexData(articleId int) (map[string]interface{}, e
 		return indexData, error
 	} else {
 		indexData["relativeArticlesByOtherChannel"] = relativeArticlesByOtherChannel
-	}
-
-	if comments, error := commentModal.GetArticleCommentInfos(articleId); error != nil {
-		return indexData, error
-	} else {
-		indexData["comments"] = comments
 	}
 
 	indexData["relativeArticlesArray"] = ic.AdaptRelativeArticlesArray(relativeArticles)
@@ -94,30 +96,14 @@ func (ic IndexController) GetUserExtraInfo(userId, articleId int) (map[string]in
 	return extraInfo, nil
 }
 
-func (ic IndexController) HandleComment(c *gin.Context) {
-
-	articleIdString, isExist := c.GetQuery("articleId")
-
-	if !isExist {
-		c.JSON(200, map[string]string{"rc": "1", "msg": "articleId 不能为空"})
-		return
-	}
-
-	articleId, error := strconv.Atoi(articleIdString)
+func (ic IndexController) GetArticleComments(userId, articleId int) ([]model.CommentInfo, error) {
+	comments, error := model.NewCommentlModel().GetArticleComments(userId, articleId)
 
 	if error != nil {
-		c.JSON(200, map[string]string{"rc": "1", "msg": "articleId 转换失败"})
-		return
+		return comments, error
 	}
 
-	comments, error := model.NewCommentlModel().GetArticleCommentInfos(int(articleId))
-
-	if error != nil {
-		c.JSON(200, map[string]string{"rc": "2", "msg": "数据库操作失败"})
-		return
-	}
-
-	c.JSON(200, map[string]interface{}{"rc": "0", "data": comments})
+	return comments, nil
 }
 
 func (ic IndexController) RenderArticle(c *gin.Context) {
@@ -135,9 +121,18 @@ func (ic IndexController) RenderArticle(c *gin.Context) {
 
 	if userInfo, isExist := ic.GetUserInfo(c); isExist {
 		detailData["userInfo"] = userInfo
+
+		// 用户收藏点赞信息
 		if extraInfo, error := ic.GetUserExtraInfo(userInfo.ID, articleId); error == nil {
 			detailData["extraInfo"] = extraInfo
 		}
+
+		// 用户评论信息
+		if comments, error := ic.GetArticleComments(userInfo.ID, articleId); error == nil {
+			detailData["comments"] = comments
+		}
+	} else {
+		detailData["comments"] = []interface{}{}
 	}
 
 	c.HTML(200, "windex.html", detailData)
@@ -152,11 +147,7 @@ func (ic IndexController) SupportArticle(c *gin.Context) {
 		ic.HandleThrowException(c, errors.New("请传入 articleId"))
 	}
 
-	articleId, error := strconv.Atoi(articleIdString)
-
-	if error != nil {
-		ic.HandleThrowException(c, errors.New("请传入 articleId"))
-	}
+	articleId, _ := strconv.Atoi(articleIdString)
 
 	isSupported, isExist := c.GetPostForm("isSupported")
 
@@ -193,12 +184,7 @@ func (ic IndexController) CollectArticle(c *gin.Context) {
 		ic.HandleThrowException(c, errors.New("请传入 articleId"))
 	}
 
-	articleId, error := strconv.Atoi(articleIdString)
-
-	if error != nil {
-		ic.HandleThrowException(c, errors.New("请传入 articleId"))
-		return
-	}
+	articleId, _ := strconv.Atoi(articleIdString)
 
 	isCollected, isExist := c.GetPostForm("isCollected")
 
@@ -237,12 +223,7 @@ func (ic IndexController) HandleFollowingAnchor(c *gin.Context) {
 		return
 	}
 
-	anchorId, error := strconv.Atoi(anchorIdString)
-
-	if error != nil {
-		ic.HandleThrowException(c, error)
-		return
-	}
+	anchorId, _ := strconv.Atoi(anchorIdString)
 
 	isFollowing, isExist := c.GetPostForm("isFollowing")
 
@@ -270,5 +251,123 @@ func (ic IndexController) HandleFollowingAnchor(c *gin.Context) {
 	}
 
 	c.JSON(200, map[string]string {"rc": "0", "msg": "ok"})
-
 }
+
+// 处理文章评论
+func (ic IndexController) HandleArticleComment(c *gin.Context) {
+	articleIdString, isExist := c.GetPostForm("articleId")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 articleId"))
+		return
+	}
+
+	articleId, _ := strconv.Atoi(articleIdString)
+
+	comment, isExist := c.GetPostForm("comment")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 comment"))
+		return
+	}
+
+	userInfo, _ := ic.GetUserInfo(c)
+
+	error := model.NewCommentlModel().CreateArticleComment(userInfo.ID, articleId, comment)
+
+	if error != nil {
+		ic.HandleThrowException(c, error)
+		return
+	}
+
+	c.JSON(200, map[string]string { "rc": "0", "msg": "ok" })
+}
+
+// 处理评论评论
+func (ic IndexController) HandleCommentComment(c *gin.Context) {
+	commentIdString, isExist := c.GetPostForm("commentId")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 commentId"))
+		return
+	}
+
+	commentId, _ := strconv.Atoi(commentIdString)
+
+	comment, isExist := c.GetPostForm("comment")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 comment"))
+		return
+	}
+
+	userInfo, _ := ic.GetUserInfo(c)
+
+	error := model.NewCommentlModel().CreateCommentComment(userInfo.ID, commentId, comment)
+
+	if error != nil {
+		ic.HandleThrowException(c, error)
+		return
+	}
+
+	c.JSON(200, map[string]string { "rc": "0", "msg": "ok" })
+}
+
+// 删除评论
+func (ic IndexController) HandleDeleteComment(c *gin.Context) {
+	commentIdString, isExist := c.GetPostForm("commentId")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 commentId"))
+		return
+	}
+
+	commentId, _ := strconv.Atoi(commentIdString)
+
+	error := model.NewCommentlModel().DeleteComment(commentId)
+
+	if error != nil {
+		ic.HandleThrowException(c, error)
+		return
+	}
+
+	c.JSON(200, map[string]string { "rc": "0", "msg": "ok" })
+}
+
+// 评论点赞
+func (ic IndexController) HandleCommentSupport(c *gin.Context) {
+	commentIdString, isExist := c.GetPostForm("commentId")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 commentId"))
+		return
+	}
+
+	commentId, _ := strconv.Atoi(commentIdString)
+
+	isSupport, isExist := c.GetPostForm("isSupport")
+
+	if !isExist {
+		ic.HandleThrowException(c, errors.New("请传入 isSupport"))
+		return
+	}
+
+	userInfo, _ := ic.GetUserInfo(c)
+
+	if isSupport == "true" {
+		if error := model.NewSupportModel().CreateSupportComment(userInfo.ID, commentId); error != nil {
+			ic.HandleThrowException(c, error)
+			return
+		}
+		c.JSON(200, map[string]string { "rc": "0", "msg": "ok" })
+		return
+	}
+
+	if error := model.NewSupportModel().DeleteSupportComment(userInfo.ID, commentId); error != nil {
+		ic.HandleThrowException(c, error)
+		return
+	}
+
+	c.JSON(200, map[string]string { "rc": "0", "msg": "ok" })
+}
+

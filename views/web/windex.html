@@ -75,28 +75,86 @@
 						<div class="send-article-comment-input">
 							<textarea placeholder="说点什么吧!" style="resize:none"></textarea>
 						</div>
-						<div class="send-article-comment-btn">
+						<div class="send-article-comment-btn" data-articleId="{{.article.Id}}">
 							评论
 						</div>
 					</section>
 					<section class="article-comments">
-						<div class="article-comments-title">相关评论(2)</div>
-						<div class="article-comments-content">
-							{{range $commentInfo := .comments}}
-                                <div>
-                                    <div class="article-comments-content-avatar">
-                                        <img src={{$commentInfo.UserAvatar}}>
-                                    </div>
-                                    <div class="article-comments-content-info">
-                                        <p>
-                                            <strong>{{$commentInfo.Username}}</strong>
-                                            <span>{{$commentInfo.CommentTime | formatTimeString}}</span>
-                                        </p>
-                                        <p>{{$commentInfo.CommentContent}}</p>
-                                    </div>
-                                </div>
-							{{end}}
-						</div>
+						{{$length := len .comments}}
+						<div class="article-comments-title">相关评论({{$length}})</div>
+						{{if eq $length 0}}
+							<div class="article-comments-content-empty">
+								<p>暂无评论</p>
+							</div>
+						{{else}}
+                            <div class="article-comments-content">
+								{{$userId := .userInfo.ID}}
+								{{range $commentInfo := .comments}}
+									<div class="article-comments-item">
+                                        <div>
+                                            <div class="article-comments-content-avatar">
+                                                <img src={{$commentInfo.UserAvatar}}>
+                                            </div>
+                                            <div class="article-comments-content-info">
+                                                <p>
+                                                    <strong>{{$commentInfo.Username}}</strong>
+                                                    <span>{{$commentInfo.CommentTime | formatTimeString}}</span>
+                                                </p>
+                                                <p>{{$commentInfo.CommentContent}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="article-comments-opecation">
+                                            <p>
+                                                <span class="reply">回复</span>
+												{{if eq $userId $commentInfo.UserId}}
+													<span class="delete" data-commentId="{{$commentInfo.Id}}">删除</span>
+												{{end}}
+												{{if $commentInfo.IsSupported}}
+													<span class="support" style="color: #ee5044" data-commentId="{{$commentInfo.Id}}">
+														已赞
+													</span>
+												{{else}}
+                                                    <span class="support" data-commentId="{{$commentInfo.Id}}">赞一下</span>
+												{{end}}
+                                            </p>
+                                        </div>
+									</div>
+                                    <div class="article-comments-item-reply" style="display: none">
+										<textarea placeholder="请填写评论的回复" data-commentId="{{$commentInfo.Id}}"></textarea>
+									</div>
+									{{range $subCommentInfo := $commentInfo.Children}}
+                                        <div class="article-comments-sub-item">
+                                            <div>
+                                                <div class="article-comments-content-avatar">
+                                                    <img src={{$subCommentInfo.UserAvatar}}>
+                                                </div>
+                                                <div class="article-comments-content-info">
+                                                    <p>
+                                                        <strong>{{$subCommentInfo.Username}}</strong>
+                                                        <span>{{$subCommentInfo.CommentTime | formatTimeString}}</span>
+                                                    </p>
+                                                    <p>{{$subCommentInfo.CommentContent}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="article-comments-opecation">
+                                                <p>
+													{{if eq $userId $subCommentInfo.UserId}}
+														<span class="delete" data-commentId="{{$subCommentInfo.Id}}">删除</span>
+													{{end}}
+                                                    {{if $subCommentInfo.IsSupported}}
+														<span class="support" style="color: #ee5044" data-commentId="{{$subCommentInfo.Id}}">
+															已赞
+														</span>
+													{{else}}
+														<span class="support" data-commentId="{{$subCommentInfo.Id}}">赞一下</span>
+													{{end}}
+                                                </p>
+                                            </div>
+                                        </div>
+									{{end}}
+								{{end}}
+                            </div>
+						{{end}}
 					</section>
 				</section>
 			</section>

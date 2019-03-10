@@ -154,4 +154,130 @@ $(document).ready(function () {
            }
        });
     });
+
+    // 文章评论
+    $('.send-article-comment-btn').on('click', function() {
+        var comment = $('textarea', '.send-article-comment-input').val();
+        var articleId = $(this).attr('data-articleId');
+
+        if (comment.trim() === '') {
+            alert("请先填写评论内容");
+            return
+        }
+
+        var params = {articleId: articleId, comment: comment}
+
+        $.ajax({
+            type: 'POST',
+            url: '/article/comment',
+            data: params,
+            headers: {
+                token: window.localStorage.getItem("token")
+            },
+            success: function(result) {
+                if (result.rc === "0") {
+                    window.location.reload();
+                } else {
+                    alert(result.msg);
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+
+    // 回复评论
+    $('.article-comments-opecation', '.article-comments-item').each(function (index, element) {
+        $(element).find('.reply').on('click', function () {
+            var $reply = $(element).parents('.article-comments-item').next('.article-comments-item-reply');
+
+            if ($reply.css('display') === "none") {
+                $reply.show();
+            } else {
+                $reply.hide();
+            }
+        })
+    })
+
+    $('.article-comments-item-reply').find('textarea').on('keydown', function(event) {
+        var commentId = $(this).attr('data-commentId');
+        var comment = event.target.value.trim();
+        var keyCode = event.keyCode
+
+        if (keyCode === 13) {
+            var params = { commentId: commentId, comment: comment };
+
+            $.ajax({
+                type: 'POST',
+                url: '/comment/comment',
+                data: params,
+                headers: {
+                    token: window.localStorage.getItem("token")
+                },
+                success: function(result) {
+                    if (result.rc === "0") {
+                        window.location.reload();
+                    } else {
+                        alert(result.msg);
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    })
+
+    // 删除评论
+    $('.article-comments-opecation').each(function (index, element) {
+        $(element).find('.delete').on('click', function () {
+            var commentId = $(this).attr('data-commentId');
+            $.ajax({
+                type: 'POST',
+                url: '/comment/delete',
+                data: { commentId: commentId },
+                headers: {
+                    token: window.localStorage.getItem("token")
+                },
+                success: function(result) {
+                    if (result.rc === "0") {
+                        window.location.reload();
+                    } else {
+                        alert(result.msg);
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        })
+    });
+
+    // 评论点赞
+    $('.article-comments-opecation').each(function (index, element) {
+        $(element).find('.support').on('click', function () {
+            var commentId = $(this).attr('data-commentId');
+            var isSupport = $(this).text() == '赞一下';
+
+            $.ajax({
+                type: 'POST',
+                url: '/comment/support',
+                data: { commentId: commentId, isSupport: isSupport },
+                headers: {
+                    token: window.localStorage.getItem("token")
+                },
+                success: function(result) {
+                    if (result.rc === "0") {
+                        window.location.reload();
+                    } else {
+                        alert(result.msg);
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        })
+    });
 });

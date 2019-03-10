@@ -91,14 +91,14 @@ func (cc ChannelController) GetChannelArticles(c *gin.Context) {
 	articles, error := articleModel.GetArticlesByChannelId(channelId, page, size)
 
 	if error != nil {
-		c.JSON(200, map[string]string {"rc": "2", "msg": "数据库操作失败"})
+		c.JSON(200, map[string]string {"rc": "2", "msg": error.Error()})
 		return
 	}
 
 	count, error := articleModel.GetArticleCountByChannelId(channelId)
 
 	if error != nil {
-		c.JSON(200, map[string]string {"rc": "2", "msg": "数据库操作失败"})
+		c.JSON(200, map[string]string {"rc": "2", "msg": error.Error()})
 		return
 	}
 

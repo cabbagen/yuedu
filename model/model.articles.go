@@ -297,5 +297,70 @@ func (am ArticleModel) GetLastNewArticles(channelId, numbers int) ([]SimpleArtic
 }
 
 // 搜索页面，通过模糊查询获取相关的文章列表
+func (am ArticleModel) GetArticlesByKeyword(keyword string, page, size int) ([]SimpleArticleInfo, error) {
+	var articles []SimpleArticleInfo
 
+	rows, error := am.database.Debug().Table("yd_articles").
+		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
+		Where("title like ?", "%" + keyword + "%").
+		Joins("inner join yd_users on yd_users.id = yd_articles.anchor").
+		Limit(size).
+		Offset(page * size).
+		Rows()
+
+	if error != nil {
+		return articles, error
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
+			return articles, error
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles, nil
+}
+
+// 查询相关的文章总条数
+func (am ArticleModel) GetArticleCountByKeyword(keyword string) (int, error) {
+	var count int = 0
+
+	if result := am.database.Table("yd_articles").Where("title like ?", "%" + keyword + "%").Count(&count); result.Error != nil {
+		return count, result.Error
+	}
+
+	return count, nil
+}
+
+// 获取数据库最新的指定数目的文章
+func (am ArticleModel) GetCommonLastArticles(numbers int) ([]SimpleArticleInfo, error) {
+	var articles []SimpleArticleInfo
+
+	rows, error := am.database.Table("yd_articles").
+		Select("yd_articles.id, title, author, yd_users.username, during, play_number, cover_img, audio, content_text").
+		Joins("inner join yd_users on yd_articles.anchor = yd_users.id").
+		Limit(numbers).
+		Order("yd_articles.created_at desc").
+		Rows()
+
+	if error != nil {
+		return articles, error
+	}
+
+	for rows.Next() {
+		var article SimpleArticleInfo = SimpleArticleInfo{}
+
+		if error := rows.Scan(&article.Id, &article.Title, &article.Author, &article.AnchorName, &article.During, &article.PlayNumber, &article.CoverImg, &article.Audio, &article.ContentText); error != nil {
+			return articles, error
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles, nil
+}
 

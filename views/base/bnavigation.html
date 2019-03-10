@@ -16,7 +16,7 @@
 				</ul>
 				<section class="common-operation">
 					<div class="common-search">
-						<input type="text" name="search" />
+						<input type="text" name="search" id="search" />
 						<i class="icon-search" title="查询搜索"></i>
 					</div>
 					<div class="common-login">
@@ -38,6 +38,16 @@
         if (matched) {
             $('a', '.common-navigation').eq(matched[1] - 1).addClass('hover');
         }
+
+
+        // 去搜索
+        $('#search').on('keydown', function(event) {
+            var value = event.target.value.trim();
+
+            if (value !== '' && event.keyCode === 13) {
+                window.location.href = "/search?keyword=" + value;
+            }
+        })
     </script>
 
 	{{/* 登录模态框 */}}
@@ -174,6 +184,5 @@
             $('body').css({ height: 'auto', overflow: 'visible' });
             $('.common-register-panel-wrap').hide();
         });
-
     </script>
 {{end}}
