@@ -43,3 +43,13 @@ func removeHtmlTags(s string) interface{} {
 
 	return tagRegExp.ReplaceAllString(s, "")
 }
+
+func plus(numbers ...int) interface{} {
+	sum := 0
+
+	for _, number := range numbers {
+		sum += number
+	}
+
+	return sum
+}

@@ -101,3 +101,45 @@ func (um UserModel) ValidateUserInfo(username, password string) (bool, error) {
 
 	return userInfo.ID > 0, nil
 }
+
+// 获取用户的额外信息
+func (um UserModel) GetUserExtraInfo(userId, articleId int) (map[string]interface{}, error) {
+	var extraInfo map[string]interface{} = make(map[string]interface{})
+
+	var article schema.Article
+
+	articleResult := um.database.Table("yd_articles").Where("id = ?", articleId).First(&article)
+
+	if articleResult.Error != nil {
+		return extraInfo, articleResult.Error
+	}
+
+	// 查询该用户是否收藏了文章
+	isCollected, error := NewCollectionModel().IsCollectedArticle(userId, articleId)
+
+	if error != nil {
+		return extraInfo, error
+	}
+
+	extraInfo["isCollected"] = isCollected
+
+	// 用户是否喜欢该文章
+	isSupported, error := NewSupportModel().IsSupportArticle(userId, articleId)
+
+	if error != nil {
+		return extraInfo, error
+	}
+
+	extraInfo["isSupported"] = isSupported
+
+	// 用户是否为文章主播的粉丝
+	followFlag, error := NewRelationModel().GetUsersRelations(userId, article.Anchor)
+
+	if error != nil {
+		return extraInfo, error
+	}
+
+	extraInfo["isFollowing"] = followFlag == 1
+
+	return extraInfo, nil
+}

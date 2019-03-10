@@ -127,7 +127,7 @@
                     $('.common-login-panel-close').click();
 
                     // 记录 token
-                    window.sessionStorage.setItem("token", result.data);
+                    window.localStorage.setItem("token", result.data);
 					window.setTimeout(function () {
 						window.location.reload();
                     }, 1000);

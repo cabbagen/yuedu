@@ -67,8 +67,8 @@
 					{{end}}
 				</section>
 				<section class="article-anchor">
-					<a href="#">上一篇</a>
-					<a href="#">下一篇</a>
+					<a href="/article/{{plus .article.Id -1}}">上一篇</a>
+					<a href="/article/{{plus .article.Id 1}}">下一篇</a>
 				</section>
 				<section class="article-comments-wrap">
 					<section class="send-article-comment">
@@ -112,29 +112,49 @@
 						</p>
 						<div class="author-detail">
 							<div>
-								<p>作品数：{{.article.AnchorInfo.Articles}}</p>
-								<p>粉丝数：{{.article.AnchorInfo.Followers}}</p>
+								<p>作品数：<span>{{.article.AnchorInfo.Articles}}</span></p>
+								<p>粉丝数：<span>{{.article.AnchorInfo.Followers}}</span></p>
 							</div>
-							<div class="author-opecation">
-								<span>关注</span>
+							<div class="author-opecation" data-anchor="{{.article.AnchorInfo.Id}}">
+								{{if .extraInfo.isFollowing}}
+									<span>取消关注</span>
+								{{else}}
+                                    <span>关注</span>
+								{{end}}
 							</div>
 						</div>
 					</div>
 				</section>
 				<section class="article-relative-detail">
 					<div>
-						<div class="article-relative-detail-icon">
-                            <i class="icon icon-thumbs-up"></i>
-							<span>赞</span>
-						</div>
-                        <div class="article-relative-detail-text">{{.article.Supports}}</div>
+						{{if .extraInfo.isSupported}}
+                            <div class="article-relative-detail-icon article-support selected" data-articleId="{{.article.Id}}">
+                                <i class="icon icon-thumbs-up"></i>
+                                <span>赞</span>
+                            </div>
+                            <div class="article-relative-detail-text selected">{{.article.Supports}}</div>
+						{{else}}
+                            <div class="article-relative-detail-icon article-support" data-articleId="{{.article.Id}}">
+                                <i class="icon icon-thumbs-up"></i>
+                                <span>赞</span>
+                            </div>
+                            <div class="article-relative-detail-text">{{.article.Supports}}</div>
+						{{end}}
 					</div>
 					<div>
-						<div class="article-relative-detail-icon">
-                            <i class="icon icon-heart"></i>
-							<span>收藏</span>
-						</div>
-						<div class="article-relative-detail-text">{{.article.Collections}}</div>
+						{{if .extraInfo.isCollected}}
+                            <div class="article-relative-detail-icon article-collection selected" data-articleId="{{.article.Id}}">
+                                <i class="icon icon-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="article-relative-detail-text selected">{{.article.Collections}}</div>
+						{{else}}
+                            <div class="article-relative-detail-icon article-collection" data-articleId="{{.article.Id}}">
+                                <i class="icon icon-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="article-relative-detail-text">{{.article.Collections}}</div>
+						{{end}}
 					</div>
 					<div>
 						<div class="article-relative-detail-icon article-relative-detail-shang">
@@ -156,12 +176,12 @@
 						<div class="article-relative-article-panel-inner">
 							{{range $relativeArticle := .relativeArticlesArray}}
 								<ol>
-								{{range $article := $relativeArticle}}
-									<li>
-										<img src="{{$article.CoverImg}}" />
-										<p><a href="/article/{{$article.Id}}">{{$article.Title}}</a></p>
-									</li>
-								{{end}}
+									{{range $article := $relativeArticle}}
+										<li>
+											<img src="{{$article.CoverImg}}" />
+											<p><a href="/article/{{$article.Id}}">{{$article.Title}}</a></p>
+										</li>
+									{{end}}
 								</ol>
 							{{end}}
 						</div>

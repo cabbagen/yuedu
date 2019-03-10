@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/dgrijalva/jwt-go"
+	"time"
 )
 
 type TokenMiddleware struct {
@@ -26,7 +27,7 @@ func (tm TokenMiddleware) Handle(c *gin.Context) {
 	_, ok := tm.ValidateToken(tokenString)
 
 	if !ok {
-		c.AbortWithStatusJSON(200, map[string]string {"rc": "8", "msg": "当前没有权限查看"})
+		c.AbortWithStatusJSON(200, map[string]string {"rc": "8", "msg": "token 解析错误"})
 	}
 
 	c.Next()
@@ -36,7 +37,7 @@ func (tm TokenMiddleware) SignToken(userInfo string) (string, error) {
 	claims := TokenClaims{
 		UserInfo: userInfo,
 		StandardClaims: jwt.StandardClaims {
-			ExpiresAt: 15000,
+			ExpiresAt: int64(time.Now().Add(time.Hour * 72).Unix()),
 		},
 	}
 

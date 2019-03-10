@@ -4,7 +4,6 @@ import (
 	"yuedu/database"
 	"github.com/jinzhu/gorm"
 	"yuedu/schema"
-	"time"
 )
 
 type RelationModel struct {
@@ -40,6 +39,7 @@ func (rm RelationModel) GetUserFollowers(userId int) ([]schema.User, error) {
 	return singleFollowers, nil
 }
 
+// 获取相互关注的用户
 func (rm RelationModel) GetRelationUsers(userId int) ([]schema.User, error) {
 	var relations []schema.Relation
 
@@ -109,6 +109,7 @@ func (rm RelationModel) GetUserFollowings(userId int) ([]schema.User, error) {
 	return singleFollowings, nil
 }
 
+// 查询用户正在关注的人员数量
 func (rm RelationModel) GetUserFollowingCount(userId int) (int, error) {
 	var count int
 
@@ -122,7 +123,7 @@ func (rm RelationModel) GetUserFollowingCount(userId int) (int, error) {
 }
 
 // 添加关注
-func (rm RelationModel) CreateUserFollowing(userId, relationUserId int) error {
+func (rm RelationModel) CreateUserFollowing(userId, relatedUserId int) error {
 	var relation schema.Relation
 
 	var condition string = "user_id = ? and relation_user_id = ? and relation_type = 1"
@@ -130,7 +131,7 @@ func (rm RelationModel) CreateUserFollowing(userId, relationUserId int) error {
 	// 查询该用户是否被关注过
 	// 如果被关注过，则修改这条记录
 	// 如果未被关注过，则新建一条记录
-	if result := rm.database.Table("yd_relations").Where(condition, relationUserId, userId).First(&relation); result.Error != nil {
+	if result := rm.database.Table("yd_relations").Where(condition, relatedUserId, userId).First(&relation); result.Error != nil && !result.RecordNotFound() {
 		return result.Error
 	}
 
@@ -141,7 +142,7 @@ func (rm RelationModel) CreateUserFollowing(userId, relationUserId int) error {
 		return nil
 	}
 
-	if error := rm.CreateUserRelation(userId, relationUserId, 1); error != nil {
+	if error := rm.CreateUserRelation(userId, relatedUserId, 1); error != nil {
 		return error
 	}
 
@@ -155,9 +156,6 @@ func (rm RelationModel) CreateUserRelation(userId, relationUserId int, relationT
 		RelationUserId: relationUserId,
 		RelationType: relationType,
 	}
-
-	relation.CreatedAt = time.Now()
-	relation.UpdatedAt = time.Now()
 
 	if result := rm.database.Create(&relation); result.Error != nil {
 		return result.Error
@@ -180,5 +178,92 @@ func (rm RelationModel) DeleteUserRelation(relationId int) error {
 	if result := rm.database.Where("id = ?", relationId).Delete(&schema.Relation{}); result.Error != nil {
 		return result.Error
 	}
+	return nil
+}
+
+// 获取两个用户之间的关系
+func (rm RelationModel) GetUsersRelations(userId, relatedUserId int) (int, error) {
+	var relation schema.Relation
+	var followCondition = "relation_type = 1 and user_id = ? and relation_user_id = ?"
+
+	followingResult := rm.database.Table("yd_relations").Where(followCondition, userId, relatedUserId).First(&relation)
+
+	if followingResult.Error != nil && !followingResult.RecordNotFound() {
+		return 0, followingResult.Error
+	}
+
+	// userId  关注  relatedUserId
+	if relation.ID > 0 {
+		return 1, nil
+	}
+
+	followerResult := rm.database.Table("yd_relations").Where(followCondition, relatedUserId, userId).First(&relation)
+
+	if followerResult.Error != nil && !followerResult.RecordNotFound() {
+		return 0, followerResult.Error
+	}
+
+	// relatedUserId  关注  userId
+	if relation.ID > 0 {
+		return 2, nil
+	}
+
+	var commonCondition = "relation_type = 2 and ((user_id = ? and relation_user_id = ?) or (user_id = ? and relation_user_id = ?))"
+
+	commonResult := rm.database.Table("yd_relations").
+		Where(commonCondition, userId, relatedUserId, relatedUserId, userId).
+		First(&relation)
+
+	if commonResult.Error != nil && !commonResult.RecordNotFound() {
+		return 0, commonResult.Error
+	}
+
+	// userId  relatedUserId 相互关注
+	if relation.ID > 0 {
+		return 3, nil
+	}
+
+	return 0, nil
+}
+
+// 取消关注
+func (rm RelationModel) CancelUserFollowing(userId, relatedUserId int) error {
+	var relation schema.Relation
+
+	// 如果存在单向的关系
+	// 则直接删除该记录
+	singleResult := rm.database.Table("yd_relations").
+		Where("user_id = ? and relation_user_id = ? and relation_type = 1", userId, relatedUserId).
+		First(&relation)
+	
+	if singleResult.Error != nil && !singleResult.RecordNotFound() {
+		return singleResult.Error
+	}
+	
+	if relation.ID > 0 {
+		return rm.DeleteUserRelation(relation.ID)
+	}
+	
+	// 如果两个用户已经相互关注
+	// 则需要修改这条记录
+	condition := "relation_type = 2 and ((user_id = ? and relation_user_id = ?) or (user_id = ? and relation_user_id = ?))"
+	
+	commonResult := rm.database.Table("yd_relations").
+		Where(condition, userId, relatedUserId, relatedUserId, userId).
+		First(&relation)
+	
+	if commonResult.Error != nil && !commonResult.RecordNotFound() {
+		return commonResult.Error
+	}
+
+	updatedInfo := map[string]interface{} {
+		"user_id": relatedUserId,
+		"relation_user_id": userId,
+		"relation_type": 1,
+	}
+	if relation.ID > 0 {
+		return rm.UpdateUserRelation(relation.ID, updatedInfo)
+	}
+
 	return nil
 }

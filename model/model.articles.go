@@ -75,13 +75,22 @@ func (am ArticleModel) GetArticleInfoById(articleId int) (ArticleInfo, error) {
 		return articleInfo, result.Error
 	}
 
-	if result := am.database.Table("yd_supports").Where("article_id = ? and state = 1 and type = 1", articleId).Count(&articleInfo.Supports); result.Error != nil {
-		return articleInfo, result.Error
+	supports, error := NewSupportModel().GetSupportCountForArticle(articleId)
+
+	if error != nil {
+		return articleInfo, error
 	}
 
-	if result := am.database.Table("yd_collections").Where("article_id = ? and state = 1", articleId).Count(&articleInfo.Collections); result.Error != nil {
-		return articleInfo, result.Error
+	articleInfo.Supports = supports
+
+	collections, error := NewCollectionModel().GetCollectionCountForArticle(articleId)
+
+	if error != nil {
+		return articleInfo, error
 	}
+
+	articleInfo.Collections = collections
+
 
 	if archorInfo, error := NewUserModel().GetUserInfo(article.Anchor); error != nil {
 		return articleInfo, error
@@ -92,7 +101,7 @@ func (am ArticleModel) GetArticleInfoById(articleId int) (ArticleInfo, error) {
 	return articleInfo, nil
 }
 
-// 获取指定文章相关的 n 条文章
+// 获取指定文章 Id 相关的 n 条文章
 func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) ([]SimpleArticleInfo, error) {
 	var releasedArticles []SimpleArticleInfo
 
@@ -125,6 +134,8 @@ func (am ArticleModel) GetReleasedArticlesByArticleId(articleId int, limit int) 
 	return releasedArticles, nil
 }
 
+// 获取相关的文章 id 列表
+// 文章的相关由文章的 tag 决定
 func (am ArticleModel) GetReleaseArticleIdsByArticleId(articleId int, limit int) ([]int, error) {
 	var articleTagIds []string
 
@@ -284,3 +295,7 @@ func (am ArticleModel) GetLastNewArticles(channelId, numbers int) ([]SimpleArtic
 
 	return articles, nil
 }
+
+// 搜索页面，通过模糊查询获取相关的文章列表
+
+

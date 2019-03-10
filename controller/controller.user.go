@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"yuedu/model"
 	"strconv"
-	"log"
 )
 
 type UserController struct {
@@ -65,26 +64,3 @@ func (uc UserController) GetUserData(userId int) (map[string]interface{}, error)
 	return userData, nil
 }
 
-func (uc UserController) FetchUserData(c *gin.Context) {
-	userId, _ := strconv.Atoi(c.Param("userId"))
-
-	userData, error := uc.GetUserData(userId)
-
-	if error != nil {
-		log.Println(error)
-	}
-
-	c.JSON(200, userData)
-}
-
-func (uc UserController) HandleFollows(c *gin.Context) {
-	//followers := model.NewRelationModel().GetUserFollowers(256)
-	//
-	//c.JSON(200, followers)
-}
-
-func (uc UserController) HandleFollowings(c *gin.Context) {
-	//followers := model.NewRelationModel().GetUserFollowings(256)
-	//
-	//c.JSON(200, followers)
-}

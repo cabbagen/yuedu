@@ -87,7 +87,7 @@ func (lc LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	userInfoString, maxAge := utils.AESECBEncode(utils.AESKEY, string(userInfoJson)), int((time.Hour * 24).Seconds())
+	userInfoString, maxAge := utils.AESECBEncode(utils.AESKEY, string(userInfoJson)), int(time.Now().Add(time.Hour * 72).Unix())
 
 	c.SetCookie("userInfo", userInfoString, maxAge, "/", "localhost", false, true)
 

@@ -208,6 +208,7 @@
 	position: relative;
 	top: 3px;
 	left: 0px;
+	cursor: pointer;
 }
 .article-relative-detail {
 	padding: 20px 0;
@@ -231,6 +232,12 @@
 	border: 1px solid #cccccc;
 	border-radius: 50%;
 }
+.article-relative-detail-icon.selected {
+	border-color: #ee5044;
+}
+.article-relative-detail-icon.selected i {
+	color: #ee5044;
+}
 .article-relative-detail-icon i {
 	font-style: normal;
 }
@@ -240,6 +247,9 @@
 }
 .article-relative-detail-text {
 	margin-left: 12px;
+}
+.article-relative-detail-text.selected {
+	color: #ee5044;
 }
 .article-relative-detail-shang {
 	position: relative;
